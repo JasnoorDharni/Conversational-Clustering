@@ -70,7 +70,7 @@ H1 is the primary confirmatory test. H2 is exploratory and will be reported as s
 
 - **Primary:** Silhouette score of final cluster assignment (higher = better-separated, more cohesive clusters).
 - **Secondary:** Davies-Bouldin index (lower = better); number of conversational turns to stable assignment (convergence speed).
-- **For RQ3:** Spearman's ρ between oracle rankings and human rankings on a held-out sample of cluster pairs; inter-rater agreement (Krippendorff's α) among human raters.
+- **For RQ2:** Spearman's ρ between oracle rankings and human rankings on a held-out sample of cluster pairs; inter-rater agreement (Krippendorff's α) among human raters.
 
 ### 4.4 Human rating instrument (preliminary)
 
