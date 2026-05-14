@@ -9,39 +9,36 @@
 
 | Version | Date | Summary |
 | --- | --- | --- |
-| v0 | 2026-05-14 | Initial anchor set committed at Sprint 1. Five thematic clusters identified (interactive/conversational clustering, LLM-as-evaluator, internal validity indices, conflict event datasets, human-in-the-loop ML). 5–10 anchor references per cluster, with one-line takes and an explicit open-questions list. No positioning paragraph yet — deferred to v1 once the experimental design stabilises. |
+| v0 | 2026-05-14 | Initial anchor set committed at Sprint 1. Six thematic clusters identified (interactive/conversational clustering, LLM-as-evaluator, internal validity indices, conflict event datasets, human-in-the-loop ML, LLM-enhanced semantic clustering). Anchor references per cluster, with one-line takes and an explicit open-questions list. No positioning paragraph yet — deferred to v1 once the experimental design stabilises. |
 
 ---
 
 ## 1. Overview
 
-This document surveys the literature adjacent to our project along five threads:
+This document surveys the literature adjacent to our project along six threads:
 
-1. **Interactive and conversational clustering** — systems that let users guide cluster formation through natural language or structured feedback.
+1. **Interactive and conversational clustering** — systems that let users guide cluster formation through natural language or structured feedback (historical context).
 2. **LLM-as-evaluator** — using language models as proxy raters in the absence of ground truth.
 3. **Internal cluster validity indices** — the evaluation metrics we rely on (Silhouette, Davies-Bouldin) and their known limitations.
 4. **Conflict event datasets and the UCDP GED** — prior uses of the dataset relevant to feature choice.
 5. **Human-in-the-loop machine learning** — the broader methodological tradition our interactive loop belongs to.
+6. **LLM-Enhanced and Semantic Intent-Driven Clustering (NEW)** — the recent state-of-the-art shift towards using LLMs not just for evaluation, but to actively extract features, generate constraints, and align clusters with complex human semantics.
 
-The document will be updated to v1 by the end of Sprint 2, at which point it will include a positioning paragraph ("prior work X measured Y using method Z; we differ in…") and notes on methodological precedents for specific instruments (e.g. bootstrap CIs, Spearman correlation as proxy-validity criterion).
+The document will be updated to v1 by the end of Sprint 2, at which point it will include a positioning paragraph ("prior work X measured Y using method Z; we differ in…") and notes on methodological precedents for specific instruments.
 
 ---
 
 ## 2. Anchor References
 
-### Thread 1 — Interactive and Conversational Clustering
+### Thread 1 — Interactive and Conversational Clustering *(Pre-LLM Context)*
 
-**\[1\] Cohn, M., Chang, M., Kauchak, D. (2017). Active learning for interactive cluster refinement.** *Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing (EMNLP).*\
-*Take:* Proposes an active-learning loop where a system queries the user for pairwise must-link / cannot-link constraints to refine text clusters. Closest methodological ancestor to our refinement loop — their constraint vocabulary (merge / split / isolate) maps directly to the natural-language instructions we anticipate. Key difference: they use explicit binary constraints, we use free-form text interpreted by an LLM.
+**\[1\] Cohn, M., Chang, M., Kauchak, D. (2017). Active learning for interactive cluster refinement.** *Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing (EMNLP).Take:* Proposes an active-learning loop where a system queries the user for pairwise must-link / cannot-link constraints to refine text clusters. Closest methodological ancestor to our refinement loop — their constraint vocabulary (merge / split / isolate) maps directly to the natural-language instructions we anticipate. Key difference: they use explicit binary constraints, we use free-form text interpreted by an LLM.
 
-**\[2\] Andrienko, N., & Andrienko, G. (2006). *Exploratory Analysis of Spatial and Temporal Data: A Systematic Approach*. Springer.**\
-*Take:* Canonical reference for interactive visual analytics on spatio-temporal data, including georeferenced event data. Informs our understanding of what a non-conversational baseline for geographic clustering looks like, and motivates why users struggle to tune spatial vs. thematic feature weights by hand — the core motivation for our system.
+**\[2\] Andrienko, N., & Andrienko, G. (2006). *Exploratory Analysis of Spatial and Temporal Data: A Systematic Approach*. Springer**.*Take:* Canonical reference for interactive visual analytics on spatio-temporal data, including georeferenced event data. Informs our understanding of what a non-conversational baseline for geographic clustering looks like, and motivates why users struggle to tune spatial vs. thematic feature weights by hand — the core motivation for our system.
 
-**\[3\] Choo, J., Lee, C., Reddy, C. K., & Park, H. (2013). UTOPIAN: User-driven topic modeling based on interactive nonnegative matrix factorization. *IEEE Transactions on Visualization and Computer Graphics*, 19(12), 1992–2001.**\
-*Take:* Demonstrates interactive refinement of topic models (a cousin of clustering) through direct user manipulation. Shows that iterative human feedback converges to more interpretable clusters than one-shot automated methods on text data — empirical evidence supporting H1 in our study, in a different domain.
+**\[3\] Choo, J., Lee, C., Reddy, C. K., & Park, H. (2013). UTOPIAN: User-driven topic modeling based on interactive nonnegative matrix factorization. *IEEE Transactions on Visualization and Computer Graphics*, 19(12), 1992–2001**.*Take:* Demonstrates interactive refinement of topic models (a cousin of clustering) through direct user manipulation. Shows that iterative human feedback converges to more interpretable clusters than one-shot automated methods on text data.
 
-**\[4\] Amershi, S., Cakmak, M., Knox, W. B., & Kulesza, T. (2014). Power to the people: The role of humans in interactive machine learning. *AI Magazine*, 35(4), 105–120.**\
-*Take:* Broad survey of interactive ML paradigms — the paper that establishes the vocabulary we use (feedback modes, convergence, interpretability). Useful as a conceptual anchor; we cite it when distinguishing our conversational loop from simpler active-learning setups.
+**\[4\] Amershi, S., Cakmak, M., Knox, W. B., & Kulesza, T. (2014). Power to the people: The role of humans in interactive machine learning. *AI Magazine*, 35(4), 105–120**.*Take:* Broad survey of interactive ML paradigms — the paper that establishes the vocabulary we use (feedback modes, convergence, interpretability).
 
 ---
 
@@ -91,6 +88,16 @@ The document will be updated to v1 by the end of Sprint 2, at which point it wil
 
 ---
 
+### Thread 6 — LLM-Enhanced and Semantic Intent-Driven Clustering *(The Modern SOTA)*
+
+**\[15\] Zhang, Y., et al. (2023). ClusterLLM: Large Language Models as a Guide for Text Clustering.** *Proceedings of EMNLP 2023.Take:* A foundational paper showing that LLMs can guide text clustering not by processing all data, but by evaluating small triplets of texts to dynamically tune the underlying embedding space. Crucial baseline for our work: they use LLMs as a "guide" for mathematical clustering, whereas we want to test a fully conversational/semantic loop.
+
+**\[16\] Viswanathan, V., et al. (2023). Large Language Models Enable Few-Shot Clustering.** *arXiv:2307.00524.Take:* Demonstrates that giving an LLM a tiny natural language prompt (e.g., "cluster by military tactic") allows it to autonomously generate thousands of pseudo-constraints for traditional clustering algorithms, reducing human effort by 90%. This directly validates our core assumption: LLMs can map semantic intent to clustering constraints better than geometric distances.
+
+**\[17\] Grootendorst, M. (2022). BERTopic: Neural topic modeling with a class-based TF-IDF procedure.** *arXiv:2203.05794* (Specifically the recent LLM representation updates). *Take:* The dominant framework for modern text clustering. Uses HDBSCAN for clustering and LLMs *post-hoc* to label the clusters. We cite this to clarify our positioning: BERTopic does "LLM-labeling of geometric clusters", while our project investigates "LLM-driven semantic clustering from the ground up".
+
+---
+
 ## 3. What We Do Not Yet Know About the Field
 
 The following threads exist but have not been surveyed:
@@ -101,13 +108,16 @@ The following threads exist but have not been surveyed:
 - **Prior uses of GEDEvent for clustering or unsupervised analysis** — we know GED is used extensively in conflict studies for regression and event counts, but we have not confirmed whether any prior work has applied clustering to the Russia-Ukraine subset.
 - **Bootstrapped confidence intervals for Silhouette scores** — our plan calls for 30 replications and CI reporting (H1); we have not identified a canonical methodological reference for this specific practice in the clustering literature.
 - **Embedding strategies for the** `where_description` **text field** — we note sentence-transformers as a candidate encoder (study plan §4.2) but have not reviewed which embedding model performs best on geographic/conflict text.
+- **Context Window Limits and Cost in Conversational Clustering (NEW)** — we do not yet know how the SOTA handles the token limits when an LLM is asked to re-cluster an entire dataset dynamically. We need to explore if recent work uses map-reduce architectures or iterative sampling.
+- **Safety Filters on Conflict Data (NEW)** — GED dataset contains violent and sensitive descriptions. We do not know to what extent commercial LLMs (GPT-4/Claude) will refuse to process this specific subset of data due to alignment filters, potentially skewing the evaluation pipeline.
 
 ---
 
 ## 4. Notes for v1 (Sprint 2 targets)
 
-- Add positioning paragraph: for each anchor reference in threads 1–2, write one sentence on how our work differs.
+- Add positioning paragraph: for each anchor reference in threads 1–2 **and 6**, write one sentence on how our work differs.
 - Expand thread 4 with any papers found to have applied clustering to GED or similar conflict datasets.
 - Resolve open thread on COP-k-means / COBRAS as potential algorithmic baselines.
 - Add methodological precedent note for bootstrap CI procedure (H1) once a reference is identified.
+- **Review the Few-Shot Clustering (Viswanathan) and ClusterLLM (Zhang) papers to solidify our H1 and H2 baselines.**
 - If a specific LLM is chosen for the interpreter and oracle (study plan §7, open question 3), add a citation for its system card or technical report.
