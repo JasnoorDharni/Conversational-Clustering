@@ -1,0 +1,5 @@
+# Single source of truth for the LLM model used across all conditions.
+# Pinned before any experimental run. Do not change after first run is logged.
+# Any change here constitutes a protocol amendment (see docs/study_design.md §12).
+
+model: claude-sonnet-4-20250514

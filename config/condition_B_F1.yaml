@@ -1,0 +1,8 @@
+condition: B
+feature_set: F1
+K: 8
+max_turns: 5
+data_path: data/sample_seed42.csv
+log_path: runs/run_log.jsonl
+model: claude-sonnet-4-20250514
+interpreter_prompt: prompts/interpreter.md
