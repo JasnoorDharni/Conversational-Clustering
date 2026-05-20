@@ -1,0 +1,40 @@
+UCDP GED 25.1 - Ukraine Subset EDA Summary
+====================================================
+Raw file MD5          : 56d33581a615c8e3772b7500c8a2c1c6
+Raw file rows         : 385,918
+Raw file columns      : 49
+
+-- Filter ------------------------------------------------
+  country_id == 369 AND date_start >= 2022-02-24
+  Filtered rows         : 27,942
+  Date range            : 2022-02-24 - 2024-12-31
+  Duplicate IDs         : 0
+
+-- Type of violence --------------------------------------
+  State-based              : 27,716  (99.2%)
+  One-sided violence       :    226  (0.8%)
+
+-- Fatality estimate (best) ------------------------------
+  Min                   : 0
+  Median                : 2.0
+  Mean                  : 8.4
+  99th pctile           : 74
+  Max                   : 15996
+  best == 0             : 206  (0.7%)
+
+-- Experimental sample -----------------------------------
+  N                     : 2,000
+  Seed                  : 42
+  Path                  : ..\data\sample_seed42.csv
+  MD5                   : a92a9a2dc2bec3a0dfa3accb6759daf0
+
+-- Outputs -----------------------------------------------
+  ..\data\eda_outputs/
+  01_event_type_distribution.png
+  02_fatality_distribution.png
+  03_temporal_distribution.png
+  04_geographic_heatmap.png
+  05_top_actors.png
+  06_adm1_distribution.png
+  07_geo_precision_distribution.png
+  eda_summary.txt
