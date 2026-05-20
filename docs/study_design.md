@@ -53,7 +53,7 @@ The following are held constant across all experimental runs to isolate the effe
 | Base clustering algorithm | k-means (scikit-learn `KMeans`, `init='k-means++'`, `n_init=10`) |
 | Number of clusters K | Fixed at K = 8 across all conditions (chosen by elbow method on the baseline feature set in a one-time pre-experiment run; see §3.1) |
 | Cluster initialisation seed | Varied systematically (30 seeds per condition, seeds 0–29); seed is a blocking variable, not a free parameter |
-| LLM model (interpreter + oracle) | `claude-sonnet-4-20250514` throughout; model version pinned in `config/model.yaml` |
+| LLM model (interpreter + oracle) | `claude-sonnet-4-6` throughout; model version pinned in `config/model.yaml` |
 | Maximum conversational turns | 5 turns per session (Conditions B and C) |
 | Prompt templates | Versioned in `prompts/`; committed before any run; not revised during the experiment |
 | Evaluation instrument | Pairwise forced-choice form (see §6.2); committed before human rating begins |
