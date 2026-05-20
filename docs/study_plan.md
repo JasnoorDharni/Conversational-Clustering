@@ -1,14 +1,14 @@
 # Study Plan — Conversational Clustering on the UCDP GEDEvent 25.1 Dataset
 
-**Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1 — filtered to Russia-Ukraine conflict  
-**Version:** v0.1  
+**Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1 — filtered to Russia-Ukraine conflict\
+**Version:** v0.1
 
 ---
 
 ## Changelog
 
 | Version | Date | Summary of changes |
-|---|---|---|
+| --- | --- | --- |
 | v0.1 | 2025-05-13 | Initial draft. Research questions, hypotheses, and scope committed at Sprint 1 start. Methodology and evaluation strategy are preliminary and will evolve. |
 
 ---
@@ -31,7 +31,7 @@ The intuition is that automated clustering on a mixed structured dataset (numeri
 
 ### Secondary — RQ2: LLM oracle as proxy for human judgment
 
-> **Do cluster quality rankings produced by an LLM oracle correlate with human rater preferences at ρ > 0.7 (Spearman's rank correlation), making oracle-driven evaluation a viable low-cost substitute for human rating in this setting?**
+> **Do cluster quality rankings produced by an LLM oracle correlate with human rater preferences at ρ &gt; 0.7 (Spearman's rank correlation), making oracle-driven evaluation a viable low-cost substitute for human rating in this setting?**
 
 This is a meta-claim about our evaluation methodology. If the oracle is a valid proxy, it justifies using it to evaluate the many experimental runs that human rating cannot cover at scale. A low correlation is an equally important finding — it would mean oracle-driven evaluation of structured conflict data is unreliable and should not be used without human validation.
 
@@ -40,7 +40,7 @@ This is a meta-claim about our evaluation methodology. If the oracle is a valid 
 ## 3. Hypotheses
 
 | ID | Type | Statement |
-|---|---|---|
+| --- | --- | --- |
 | H1 | Confirmatory | Conversational refinement improves the Silhouette score of the final cluster assignment relative to the automated baseline (one-shot k-means on default features), with the improvement quantified as a 95% CI excluding zero. |
 | H2 | Exploratory | The improvement from conversational refinement is larger when clustering uses a richer feature set (event type + actor + location + casualties) than when using location alone, suggesting refinement adds most value when the feature space is high-dimensional and ambiguous. |
 | H3 | Confirmatory | Spearman's ρ between LLM oracle cluster rankings and human rater rankings exceeds 0.7 on a held-out sample of 20 cluster pairs. |
@@ -54,7 +54,7 @@ H1 is the primary confirmatory test. H2 is exploratory and will be reported as s
 ### 4.1 Conditions
 
 | Condition | Description | Role |
-|---|---|---|
+| --- | --- | --- |
 | A — Baseline | One-shot k-means on default feature set (location + event type), K chosen by elbow method | Primary control |
 | B — Full conversational | User (or simulated oracle) refines clusters through natural language over up to 5 turns | Treatment |
 | C — LLM oracle | LLM acts as the user in condition B; used to simulate many sessions cheaply | Proxy-validity arm |
@@ -100,7 +100,7 @@ No UI beyond CLI output is required. No caching, auth, or "future extensibility"
 ## 6. Team Roles and Contribution Boundaries
 
 | Person | Sprint ownership | Gradable artifact |
-|---|---|---|
+| --- | --- | --- |
 | Person 1 | Study design · evaluation instrument · statistical analysis · related work | docs/study_plan.md, docs/related_work.md, docs/study_design.md, analysis notebooks, final report §results |
 | Person 2 | MVB · prompt engineering · logging infrastructure | src/ (pipeline code), prompts/ (versioned prompt files), README, requirements.txt |
 | Person 3 | Data pipeline · dataset exploration · experiment runner · data ethics section | data/ (cleaning scripts, EDA notebook), run logs, docs/study_plan.md §data provenance |
@@ -111,11 +111,16 @@ All three contribute to the final report and presentation. Individual contributi
 
 ## 7. Open Questions (to resolve by v0.2)
 
-- [ ] What is the exact size of the Russia-Ukraine filtered subset of GEDEvent 25.1? Does it need downsampling?
-- [ ] Is the `where_description` text field rich enough to embed, or should we treat location as purely categorical (adm1/adm2)?
+- [x] What is the exact size of the Russia-Ukraine filtered subset of GEDEvent 25.1? Does it need downsampling? 27,942 events; sample is N = 2,000 (seed 42) — decided and reproducible.
+
+- [x] Is the `where_description` text field rich enough to embed, or should we treat location as purely categorical (adm1/adm2)? §5.7 of the new provenance file answers this directly: embedding is *feasible* for \~90% of entries but "incremental value over structured geographic features is expected to be modest." This should be reflected in study_plan §7 as partially resolved, with a note that the final encoding decision is still to be made before the first run.
+
 - [ ] Which LLM API will we use for the interpreter and oracle? (Cost and rate limits matter for 30 replications.)
+
 - [ ] How do we recruit 5–8 human raters? (Classmates? Structured as a short online form?)
+
 - [ ] Should K be fixed across conditions or allowed to vary? Fixed K is cleaner for comparison; variable K is more realistic for the conversational use case.
+
 - [ ] Confirm ethical classification: GED data is publicly available, covers no individual persons, and is released by an academic institution (UCDP/Uppsala University). No IRB required for the dataset itself; human rater consent procedure to be documented.
 
 ---
