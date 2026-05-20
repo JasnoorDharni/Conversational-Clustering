@@ -2,8 +2,8 @@
 
 **Project:** Conversational Clustering  
 **Document:** `docs/data_provenance.md`  
-**Version:** v0.1  
-**Status:** Committed before any experimental runs
+**Version:** v0.3  
+**Status:** EDA complete — all §5 placeholders filled
 
 ---
 
@@ -12,6 +12,8 @@
 | Version | Date | Summary |
 |---|---|---|
 | v0.1 | 2026-05-19 | Initial provenance and ethics note. EDA summary statistics to be filled in after the team downloads the dataset and runs `data/eda_ucdp_ukraine.py`. Placeholders marked [EDA]. |
+| v0.2 | 2026-05-20 | EDA completed. Filled §5.1–§5.3 and §5.8 confirmed findings from initial `eda_summary.txt`. Sections §5.4–§5.7 remained pending. |
+| v0.3 | 2026-05-20 | All pending placeholders filled from updated `eda_summary.txt` (notebook re-run with tabular output for geo-precision, oblasts, actors, `where_description`). §5.8 checklist fully ticked. Reproducibility checklist complete. |
 
 ---
 
@@ -29,8 +31,8 @@
 | **Coverage** | Global, 1989-01-01 – 2024-12-31 |
 | **Data extracted from UCDP systems** | 2025-03-19 (per codebook cover) |
 | **File used** | `GEDEvent_v25_1.csv` (CSV format) |
-| **Raw file MD5** | [EDA — fill in after download; computed by `data/eda_ucdp_ukraine.py`] |
-| **Sample file MD5** | [EDA — fill in after running EDA script] |
+| **Raw file MD5** | `56d33581a615c8e3772b7500c8a2c1c6` |
+| **Sample file MD5** | `a92a9a2dc2bec3a0dfa3accb6759daf0` |
 
 ### 1.2 Required Citations
 
@@ -165,82 +167,108 @@ This is consistent with standard practice in unsupervised learning evaluation st
 
 ## 5. Exploratory Data Analysis — Results
 
-*This section is populated after running `python data/eda_ucdp_ukraine.py`. Placeholder values are marked [EDA].*
+*EDA complete (v0.3). All fields populated from `data/eda_outputs/eda_summary.txt`. No pending placeholders remain.*
 
 ### 5.1 Global dataset size
 
 | | Value |
 |---|---|
-| Global GED 25.1 events (all conflicts, 1989–2024) | [EDA] |
-| Events in Ukraine (country_id = 369) | [EDA] |
-| Events in Ukraine ≥ 2022-02-24 (our analysis subset) | [EDA] |
-| Date range of subset | [EDA] |
-| Duplicate event IDs | [EDA] |
+| Global GED 25.1 events (all conflicts, 1989–2024) | 385,918 |
+| Events in Ukraine (country_id = 369) | — (all post-filter; see below) |
+| Events in Ukraine ≥ 2022-02-24 (our analysis subset) | 27,942 |
+| Date range of subset | 2022-02-24 – 2024-12-31 |
+| Duplicate event IDs | 0 |
 
 ### 5.2 Event type distribution
 
 | Type | Label | Count | % |
 |---|---|---|---|
-| 1 | State-based conflict | [EDA] | [EDA] |
-| 2 | Non-state conflict | [EDA] | [EDA] |
-| 3 | One-sided violence | [EDA] | [EDA] |
+| 1 | State-based conflict | 27,716 | 99.2% |
+| 2 | Non-state conflict | 0 | 0.0% |
+| 3 | One-sided violence | 226 | 0.8% |
 
-*Expected: the overwhelming majority of events in the Russia-Ukraine post-invasion period will be type 1 (state-based). Type 3 (one-sided violence against civilians) will be a meaningful minority. Type 2 will be rare.*
+*The distribution confirms the expected pattern: virtually all events are state-based (type 1), reflecting the interstate character of the Russia-Ukraine conflict. One-sided violence against civilians (type 3) constitutes a small but meaningful minority (226 events, 0.8%). Non-state conflict (type 2) is entirely absent in this subset, consistent with the conflict's structure. The near-total dominance of type 1 means `type_of_violence` will contribute very low variance as a clustering feature; this should be noted when interpreting F2 feature-set results.*
 
 ### 5.3 Fatality distribution
 
 | Statistic | `best` estimate |
 |---|---|
-| Min | [EDA] |
-| Median | [EDA] |
-| Mean | [EDA] |
-| 99th percentile | [EDA] |
-| Max | [EDA] |
-| Events with best = 0 | [EDA] (%) |
+| Min | 0 |
+| Median | 2.0 |
+| Mean | 8.4 |
+| 99th percentile | 74 |
+| Max | 15,996 |
+| Events with best = 0 | 206 (0.7%) |
 
-*Known pattern: fatality distributions in conflict datasets are heavy-tailed and right-skewed. Most events record 1–5 deaths; a small number of major engagements record hundreds. Log transformation will be applied for clustering (see `docs/study_plan.md` §4.2).*
+*The distribution is strongly right-skewed, as expected for conflict event data. The median of 2 deaths per event confirms that most engagements are small-scale, while the maximum of 15,996 and the 99th percentile gap (74 vs. 15,996) indicate a small number of catastrophic outliers that will dominate a linear scale. **Log transformation of `best` is confirmed as necessary** before clustering, as specified in `docs/study_plan.md` §4.2. The 206 zero-fatality events (0.7%) require a decision on log-transform handling (e.g., log(best + 1)); this is pre-specified in the encoding strategy.*
 
 ### 5.4 Geographic precision
 
 | Precision code | Meaning | Count | % |
 |---|---|---|---|
-| 1 | Village / town | [EDA] | [EDA] |
-| 2 | ADM2 (raion) | [EDA] | [EDA] |
-| 3 | ADM1 (oblast) | [EDA] | [EDA] |
-| 4 | Country centroid | [EDA] | [EDA] |
+| 1 | Village / town | 24,275 | 86.9% |
+| 2 | ADM2 (raion) | 2,860 | 10.2% |
+| 3 | ADM1 (oblast) | 807 | 2.9% |
+| 4 | Country centroid | 0 | 0.0% |
 
-*A high proportion of precision-1 events indicates good spatial resolution. Precision-3 and 4 events assigned to oblast or country centroids will introduce artificial spatial clustering — a known data artifact to flag in the results.*
+97.1% of events are coded at precision 1 or 2, meaning geographic coordinates are reliable for the large majority of the subset. The 807 precision-3 events (2.9%) are assigned to oblast centroids and will cluster artificially at a small number of fixed points — a known data artifact to flag when interpreting geographic clusters. No events are assigned to the country centroid (precision 4), which is a positive quality indicator for this high-coverage conflict.
 
 ### 5.5 Top oblasts by event count (adm_1)
 
-[EDA — top 10 oblasts table]
+*Top oblasts by event count (adm_1), full filtered subset (N = 27,942):*
 
-*Expected: Donetsk, Zaporizhzhia, Kherson, Kharkiv, and Luhansk oblasts will dominate, reflecting the geographic concentration of frontline fighting.*
+| Oblast | Count | % |
+|---|---|---|
+| Donetsk oblast | 13,731 | 49.1% |
+| Kharkiv oblast | 3,125 | 11.2% |
+| Kherson oblast | 2,731 | 9.8% |
+| Luhansk oblast | 2,327 | 8.3% |
+| Zaporizhzhya oblast | 2,295 | 8.2% |
+| Sumy oblast | 366 | 1.3% |
+| Dnipropetrovsk oblast | 325 | 1.2% |
+| Mykolayiv oblast | 270 | 1.0% |
+| Chernihiv oblast | 261 | 0.9% |
+| Kyiv oblast | 255 | 0.9% |
+
+The top 3 oblasts (Donetsk, Kharkiv, Kherson) account for 70.1% of all events, confirming extreme geographic concentration along the eastern and southern front lines. This concentration is a design consideration for k-means with K = 8: clusters in Donetsk oblast will likely be further subdivided by sub-regional or actor features rather than geography alone. The 1,910 events with null `adm_1` (6.84% — see §5.8) are excluded from adm_1-based features; these events retain valid latitude/longitude coordinates.
 
 ### 5.6 Actor landscape
 
-[EDA — top 10 side_a actors]
+*Top `side_a` actors, full filtered subset:*
 
-*Expected: "Government of Ukraine" and "Government of Russia" will be the dominant Side A actors by event count. Volunteer battalions, territorial defense units, and Wagner Group may appear as distinct actors in a minority of events.*
+| Actor | Count | % |
+|---|---|---|
+| Government of Russia (Soviet Union) | 27,942 | 100.0% |
+
+`side_a` is entirely dominated by a single actor — the Government of Russia appears in 100% of events, consistent with the state-based conflict type that makes up 99.2% of the subset (§5.2). This means the `side_a` one-hot column will be a zero-variance feature and should be dropped from the F2 feature set before clustering.
+
+`side_b` cardinality is substantially higher, reflecting the variety of Ukrainian government, military, and territorial defence units coded as the opposing actor. The `side_b` one-hot encoding will produce a sparse matrix with a small number of high-frequency entries (Government of Ukraine and its armed forces) alongside many low-frequency entries. Truncation to the top-N actors by frequency (as specified in `docs/study_design.md §2.2`) is confirmed as necessary.
+
+Comma-separated actor names: 0 entries in both `side_a` and `side_b` (0.0%), so one-hot encoding does not require multi-label handling.
 
 ### 5.7 where_description field quality
 
 | Statistic | Value |
 |---|---|
-| Non-null entries | [EDA] (%) |
-| Median length (chars) | [EDA] |
-| Mean length (chars) | [EDA] |
+| Non-null entries | 27,139 / 27,942 (97.1%) |
+| Empty strings | 0 |
+| Median length (chars) | 32 |
+| Mean length (chars) | 46.3 |
+| Entries < 10 chars | 2,821 (10.4%) |
 
-*This informs the open question in `docs/study_plan.md` §7: whether `where_description` is rich enough to embed. If median length is below ~20 characters, the field is likely too sparse for sentence embeddings to add information beyond the structured geographic fields.*
+97.1% of events have a non-null `where_description`. However, 10.4% of those entries are under 10 characters — too short to carry useful semantic content beyond what the structured `adm_1`/`adm_2` fields already provide. The median length of 32 characters and mean of 46.3 characters indicate descriptions are generally brief geographic references rather than rich narrative text. This resolves the open question in `docs/study_plan.md §7`: embedding `where_description` is feasible for the ~90% of entries exceeding 10 characters, but the incremental value over structured geographic features is expected to be modest. The decision to embed or exclude this field should be finalised before the first experimental run.
 
 ### 5.8 Key data quality observations
 
-[EDA — to be filled in after running the script. Expected observations to check:]
-- [ ] Null rate in `adm_1` (should be near 0 for Ukraine events).
-- [ ] Null rate in `latitude` / `longitude` (should be 0; all GED events are fully geocoded).
-- [ ] Null rate in `best` (should be 0; `best` is always populated when an event exists).
-- [ ] Whether any events have `best = 0` (possible if all deaths are in `low` or `high` only).
-- [ ] Whether actor names contain comma-separated multiple actors (affects one-hot encoding cardinality).
+*EDA completed. Confirmed observations:*
+
+- [x] **Duplicate IDs: 0.** No duplicate event IDs in the filtered subset (27,942 events, 0 duplicates confirmed by EDA script).
+- [x] **`best` is fully populated.** 206 events have `best = 0` (0.7%), confirming the field is non-null throughout but that zero-fatality records exist. Log(best + 1) transform is required.
+- [x] **Event type is near-constant.** Type 2 (non-state conflict) has zero occurrences; type 1 accounts for 99.2%. The `type_of_violence` one-hot column will contribute negligible variance in F2 clustering — effectively a near-zero-variance feature. Consider whether to retain or drop it from F2.
+- [x] **Sample successfully drawn.** N = 2,000 events sampled with seed 42 from the 27,942-event filtered subset (14.3% sample fraction). Sample MD5 confirmed (`a92a9a2dc2bec3a0dfa3accb6759daf0`).
+- [x] **Null rate in `adm_1`: 1,910 nulls (6.84%).** These events retain valid coordinates and will contribute to geographic features but not to adm_1 one-hot columns. Imputation is not required; null adm_1 rows are handled by dropping the adm_1 column entry for those events.
+- [x] **Null rate in `latitude` / `longitude`: 0 (0.00%).** Confirmed by EDA script. All events have valid coordinates — geographic features are fully usable without imputation.
+- [x] **Actor name comma-separation: 0 entries in both `side_a` and `side_b` (0.0%).** No multi-actor entries exist; one-hot encoding does not require multi-label handling.
 
 ---
 
@@ -269,7 +297,7 @@ This is consistent with standard practice in unsupervised learning evaluation st
 
 **Composition**
 - What does each instance represent? One organized violence event — a discrete incident of lethal violence between organized actors at a specific location and date.
-- How many instances? GED 25.1 contains data covering 1989–2024 globally; our subset: [EDA] events.
+- How many instances? GED 25.1 contains 385,918 events globally (1989–2024); our filtered subset: 27,942 events (Ukraine, ≥ 2022-02-24); experimental sample: 2,000 events.
 - Does the dataset contain all instances, or a sample? It aims to be comprehensive but has known reporting-bias gaps (see §1.4).
 - Is there a label? No ground-truth cluster labels. Violence type (state-based / non-state / one-sided) is a field, not a label.
 - Is any information missing? Events in access-restricted zones are systematically underrepresented. See §1.4.
@@ -300,10 +328,11 @@ This is consistent with standard practice in unsupervised learning evaluation st
 
 ## 8. Reproducibility Checklist
 
-- [ ] Raw file downloaded from https://ucdp.uu.se/downloads/ and placed at `data/raw/GEDEvent_v25_1.csv`.
-- [ ] `python data/eda_ucdp_ukraine.py` run successfully; all outputs in `data/eda_outputs/`.
-- [ ] Raw file MD5 recorded in §1.1 of this document.
-- [ ] Sample file MD5 recorded in §1.1 and in `data/eda_outputs/eda_summary.txt`.
-- [ ] `data/sample_seed42.csv` committed to the repository.
-- [ ] EDA placeholder fields (§5) filled in from `data/eda_outputs/eda_summary.txt`.
-- [ ] All figures from `data/eda_outputs/` reviewed by the team; notable patterns and anomalies noted in §5.8.
+- [x] Raw file downloaded from https://ucdp.uu.se/downloads/ and placed at `data/raw/GEDEvent_v25_1.csv`.
+- [x] `python data/eda_ucdp_ukraine.py` run successfully; all outputs in `data/eda_outputs/`.
+- [x] Raw file MD5 recorded in §1.1 of this document (`56d33581a615c8e3772b7500c8a2c1c6`).
+- [x] Sample file MD5 recorded in §1.1 and in `data/eda_outputs/eda_summary.txt` (`a92a9a2dc2bec3a0dfa3accb6759daf0`).
+- [x] `data/sample_seed42.csv` committed to the repository.
+- [x] EDA placeholder fields (§5.1–§5.3) filled in from `data/eda_outputs/eda_summary.txt`.
+- [x] EDA placeholder fields (§5.4–§5.7) filled in from updated `data/eda_outputs/eda_summary.txt` (v0.3 notebook run).
+- [x] All figures from `data/eda_outputs/` reviewed by the team; notable patterns and anomalies noted in §5.8.
