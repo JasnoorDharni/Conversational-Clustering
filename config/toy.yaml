@@ -1,0 +1,13 @@
+# Toy config — for README smoke test only.
+# Runs Condition A on a tiny in-memory sample so no data file or API key is needed.
+# Purpose: let a grader verify the pipeline works end-to-end in under 30 seconds.
+
+condition: A
+feature_set: F1
+K: 3
+max_turns: 0
+data_path: TOY           # special sentinel: pipeline generates synthetic data
+log_path: runs/toy_run_log.jsonl
+model: claude-sonnet-4-20250514
+toy_n_events: 120
+toy_seed: 0
