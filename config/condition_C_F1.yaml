@@ -4,6 +4,6 @@ K: 8
 max_turns: 5
 data_path: data/sample_seed42.csv
 log_path: runs/run_log.jsonl
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 interpreter_prompt: prompts/interpreter.md
 oracle_prompt: prompts/oracle_user.md

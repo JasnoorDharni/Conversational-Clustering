@@ -8,6 +8,6 @@ K: 3
 max_turns: 0
 data_path: TOY           # special sentinel: pipeline generates synthetic data
 log_path: runs/toy_run_log.jsonl
-model: claude-sonnet-4-20250514
+model: claude-sonnet-4-5
 toy_n_events: 120
 toy_seed: 0

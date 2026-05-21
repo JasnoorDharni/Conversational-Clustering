@@ -64,7 +64,7 @@ def run_loop(
     K          = config["K"]
     seed       = config["seed"]
     max_turns  = config.get("max_turns", 0)
-    model      = config.get("model", "claude-sonnet-4-20250514")
+    model      = config.get("model", "claude-sonnet-4-5")
 
     interpreter_prompt = config.get("interpreter_prompt", "prompts/interpreter.md")
     oracle_prompt      = config.get("oracle_prompt",      "prompts/oracle_user.md")
