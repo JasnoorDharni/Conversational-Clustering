@@ -42,9 +42,11 @@ import jsonlines
 
 def _sha7(path: str | Path) -> str | None:
     """Return the first 7 hex chars of the SHA-256 of a file's contents.
-    Returns None if the file does not exist."""
+    Returns None if the file does not exist or path is empty/a directory."""
+    if not path:
+        return None
     p = Path(path)
-    if not p.exists():
+    if not p.exists() or not p.is_file():
         return None
     h = hashlib.sha256(p.read_bytes()).hexdigest()
     return h[:7]
