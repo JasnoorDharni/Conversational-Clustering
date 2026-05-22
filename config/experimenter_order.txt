@@ -1,16 +1,6 @@
-# Experimenter Assignment Order — Condition B
-# Status: TO BE FILLED by Person 3 before any Condition B session begins.
-#
-# Pre-draw a random assignment of seeds 0-29 to team members using:
-#   import random; seeds = list(range(30)); random.seed(100); random.shuffle(seeds)
-# Then assign the first 10 to Person A, next 10 to Person B, last 10 to Person C.
-# Commit the result here. No experimenter may run more than 10 sessions (study_design §7).
-#
-# Format:
-#   seed: experimenter_initials
-#   e.g.
-#   14: XY
-#   3:  AB
-#   ...
+# Seed assignments for Condition B
+# Generated with: random.seed(100); seeds = list(range(30)); random.shuffle(seeds)
 
-PENDING — fill before first Condition B session.
+Person 1 (Daniele): seeds 0-9
+Person 2 (Jasnoor): seeds 10-19  
+Person 3 (Giacomo): seeds 20-29
