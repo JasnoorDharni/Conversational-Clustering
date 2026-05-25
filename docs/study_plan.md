@@ -1,7 +1,7 @@
 # Study Plan — Conversational Clustering on the UCDP GEDEvent 25.1 Dataset
 
 **Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1 — filtered to Russia-Ukraine conflict\
-**Version:** v0.2
+**Version:** v0.3
 
 ---
 
@@ -11,6 +11,7 @@
 | --- | --- | --- |
 | v0.1 | 2026-05-13 | Initial draft. Research questions, hypotheses, and scope committed at Sprint 1 start. Methodology and evaluation strategy preliminary. |
 | v0.2 | 2026-05-20 | Updated after Sprint 1 completion. EDA findings incorporated: (1) `type_of_violence` and `side_a` dropped from F2 feature set due to near-zero variance (cardinality 2 and 1 respectively); (2) `where_description` embedding decision closed — excluded from feature sets, value over structured geographic features is marginal; (3) `adm_2` added to F2 cautiously given 19.8% null rate — decision documented; (4) geographic concentration finding noted (Donetsk 49.1%) with implication for F1 baseline interpretation; (5) two open questions from v0.1 resolved. Sprint 2 roadmap added. |
+| v0.3 | 2026-05-22 | Updated after Sprint 2 execution. (1) Open questions §7 updated: model string, prompt files, and K=8 marked as resolved; experimenter assignment order and rater recruitment still pending. (2) Execution status documented: Conditions A and C fully executed (120 runs, seeds 0–29, all complete). Condition B pending. (3) Preliminary result for H1 (Condition C) added. (4) Model version inconsistency between Condition A and C runs noted and flagged — protocol amendment registered in `docs/study_design.md §12`. (5) Sprint 2 roadmap updated with current completion status. |
 
 ---
 
@@ -131,17 +132,19 @@ No UI beyond CLI output. No caching, auth, or extensibility abstractions.
 
 - [x] **Ethical classification.** UCDP GED is publicly available, covers no individual persons, published by Uppsala University under academic terms. No IRB required. Human rater consent procedure documented in `docs/study_design.md §10`.
 
-### Still open (to resolve before first run)
+### Resolved (v0.3)
 
-- [ ] **LLM model string.** `study_design.md` currently has `claude-sonnet-4-20250514` — this string needs to be verified and corrected before being pinned in `config/model.yaml`. **Action: Person 2 confirms model string this sprint.**
+- [x] **LLM model string.** Pinned as `claude-sonnet-4-5` in `config/model.yaml`. Note: Condition A runs were executed with an earlier model string (`claude-sonnet-4-20250514`) before the string was corrected. This discrepancy is inconsequential for Condition A (k-means does not call the LLM) but is registered as a protocol amendment in `docs/study_design.md §12`.
 
-- [ ] **K = 8 confirmation.** Elbow method pre-run on F2 baseline not yet executed. K must be fixed and committed to `study_design.md` before any Condition B/C runs begin.
+- [x] **K = 8 confirmation.** K = 8 used in all 120 completed runs (Conditions A and C, both feature sets). Confirmed as the working fixed value. Formal elbow plot not committed separately — this is noted as a documentation gap.
 
-- [ ] **Prompt files.** `prompts/interpreter.md` and `prompts/oracle_user.md` must be committed before any Condition B or C runs. Not yet present in the repo.
+- [x] **Prompt files.** `prompts/interpreter.md` and `prompts/oracle_user.md` committed and operational. Both used in all Condition C runs without triggering placeholder errors.
 
-- [ ] **Human rater recruitment.** Target 5–8 raters; course peers as candidates. Rating form (Google Form) must be committed as a link in `docs/rating_instrument_link.txt` before any rater is recruited. Timeline: Sprint 2.
+### Still open
 
-- [ ] **Experimenter assignment order.** `config/experimenter_order.txt` not yet committed. Required before Condition B runs begin.
+- [ ] **Experimenter assignment order.** `config/experimenter_order.txt` exists but still contains `PENDING`. Must be filled before any Condition B session begins. **Blocking for Condition B.**
+
+- [ ] **Human rater recruitment.** Target 5–8 raters; course peers as candidates. Rating form (Google Form) must be committed as a link in `docs/rating_instrument_link.txt` before any rater is recruited. Required for H3. **Blocking for H3.**
 
 ---
 
@@ -149,10 +152,44 @@ No UI beyond CLI output. No caching, auth, or extensibility abstractions.
 
 Sprint 1 delivered: EDA complete, study design and quality spec pre-registered, experimental sample committed. The repo build is the critical gap going into Sprint 2.
 
-| Person | Sprint 2 job | Definition of done |
+| Person | Sprint 2 job | Status (v0.3, 2026-05-22) |
 | --- | --- | --- |
-| Person 1 | Draft human rating instrument (Google Form, 20 pairs structure) · Begin rater recruitment · Finalize K via elbow method and commit to `study_design.md §2.3` · Update `related_work.md` to v1 (positioning paragraphs) | Rating form link committed; K confirmed and logged; `related_work.md` v1 committed |
-| Person 2 | **Build the MVB**: feature encoding pipeline (`src/features.py`) · baseline clustering run (Condition A) · conversational loop CLI (`src/loop.py`) · logging to `runs/run_log.jsonl` · commit versioned prompt files (`prompts/interpreter.md`, `prompts/oracle_user.md`) · confirm and pin LLM model string in `config/model.yaml` | Condition A runs end-to-end on `sample_seed42.csv` for seeds 0–4; 5 JSONL entries in `run_log.jsonl`; all prompts committed |
-| Person 3 | Run Condition A × F1 and F2 × seeds 0–29 once the build is stable · Sanity-check run logs · Begin Condition C oracle runs · Sprint notes committed | 60 Condition A run log entries confirmed reproducible from a fresh clone; Condition C run started |
+| Person 1 | Draft human rating instrument (Google Form, 20 pairs structure) · Begin rater recruitment · Finalize K via elbow method and commit to `study_design.md §2.3` · Update `related_work.md` to v1 (positioning paragraphs) | ⚠ **Partial.** `experimenter_order.txt` and K operationally confirmed, but elbow plot not formally committed and rating form not yet linked. `related_work.md` still at v0. Rater recruitment not started. |
+| Person 2 | **Build the MVB**: feature encoding pipeline (`src/features.py`) · baseline clustering run (Condition A) · conversational loop CLI (`src/loop.py`) · logging to `runs/run_log.jsonl` · commit versioned prompt files (`prompts/interpreter.md`, `prompts/oracle_user.md`) · confirm and pin LLM model string in `config/model.yaml` | ✅ **Complete.** All modules built and operational. Prompts committed. Model string pinned. |
+| Person 3 | Run Condition A × F1 and F2 × seeds 0–29 once the build is stable · Sanity-check run logs · Begin Condition C oracle runs · Sprint notes committed | ✅ **Complete and exceeded.** 60 Condition A runs complete (seeds 0–29, F1+F2). 60 Condition C runs also complete (seeds 0–29, F1+F2). All 120 runs logged with status `complete`. |
 
-**The locking condition:** The study design is pre-registered and locks when the first entry is written to `runs/run_log.jsonl`. Any change to hypotheses, conditions, or outcome measures after that point requires a timestamped protocol amendment in `docs/study_design.md §12`. Do not begin Condition B or C runs until K is confirmed and all prompts are committed.
+**The locking condition:** The study design is pre-registered and locks when the first entry is written to `runs/run_log.jsonl`. Any change to hypotheses, conditions, or outcome measures after that point requires a timestamped protocol amendment in `docs/study_design.md §12`. Do not begin Condition B runs until `config/experimenter_order.txt` is filled.
+
+---
+
+## 9. Execution Status and Preliminary Results (added v0.3)
+
+### 9.1 Run completion
+
+| Condition | Feature set | Seeds executed | Status |
+| --- | --- | --- | --- |
+| A | F1 | 0–29 | ✅ 30/30 complete |
+| A | F2 | 0–29 | ✅ 30/30 complete |
+| B | F1 | — | ❌ Not yet started — blocked on `experimenter_order.txt` |
+| B | F2 | — | ❌ Not yet started — blocked on `experimenter_order.txt` |
+| C | F1 | 0–29 | ✅ 30/30 complete |
+| C | F2 | 0–29 | ✅ 30/30 complete |
+
+Total: **120 runs** in `runs/run_log.jsonl`, all with `status: complete`, zero refused or error entries.
+
+### 9.2 Preliminary results (Condition C vs A — pre-specified analysis)
+
+These figures are from `notebooks/analysis.ipynb` executed on the completed log. They are preliminary in the sense that Condition B data is not yet available.
+
+**Silhouette score — descriptive statistics (mean ± SD over 30 seeds):**
+
+| Condition | F1 | F2 |
+| --- | --- | --- |
+| A — Baseline | 0.905 ± 0.001 | 0.894 ± 0.001 |
+| C — Oracle | 0.874 ± 0.167 | 0.863 ± 0.053 |
+
+**H1 (Condition C/F2 vs A/F2):** Wilcoxon p = 0.9992; median improvement = −0.007; bootstrap 95% CI = [−0.031, −0.001]. **H1 not supported for Condition C.** The oracle refinement does not improve on the baseline — it slightly degrades Silhouette in the majority of seeds (22/30 negative). This is a substantive finding: automated oracle-driven refinement under these prompt and feature configurations does not outperform one-shot k-means. The confirmatory test for H1 remains the human-driven Condition B, which is still pending.
+
+**H2 (exploratory):** Cannot be computed until Condition B data is available.
+
+**H3:** Cannot be computed until human ratings are collected.

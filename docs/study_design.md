@@ -226,4 +226,4 @@ This document is in **draft (pre-registration)** status. It becomes locked when 
 
 | Amendment | Date | Description | Rationale |
 |---|---|---|---|
-| — | — | None yet | — |
+| A-001 | 2026-05-22 | **Model version inconsistency between Condition A and Condition C runs.** Condition A runs (60 runs, seeds 0–29, F1+F2) were executed while `config/model.yaml` still contained the string `claude-sonnet-4-20250514`. The string was subsequently corrected to `claude-sonnet-4-5` (commit `b90e7c0`). All Condition C runs use `claude-sonnet-4-5`. The two strings refer to the same underlying model family; the format change was a naming correction, not a model upgrade. **Impact:** Condition A does not call the LLM at any point (it is a one-shot k-means run), so the logged model string in Condition A records is informational only and has no effect on any computed metric. No replication of Condition A is required. The discrepancy is reported here for transparency and completeness of the audit trail. |
