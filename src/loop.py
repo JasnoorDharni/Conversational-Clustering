@@ -82,6 +82,7 @@ def run_loop(
 
         # ── 2. Get instruction ────────────────────────────────────────────
         if condition == "B":
+            print(summary)   # show updated clusters before asking for instruction
             instruction = _get_human_instruction(turn_n, max_turns)
             if instruction is None:
                 print("  Session ended by experimenter.")
