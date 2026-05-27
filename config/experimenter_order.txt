@@ -1,6 +1,6 @@
 # Seed assignments for Condition B
 # Generated with: random.seed(100); seeds = list(range(30)); random.shuffle(seeds)
 
-Person 1 (Daniele): seeds 0-9
-Person 2 (Jasnoor): seeds 10-19  
-Person 3 (Giacomo): seeds 20-29
+Person 1 (Daniele): seeds 0-5-13-14-15-16
+Person 2 (Jasnoor): seeds 6-8-11-12-(17-18-19-20-21-22)
+Person 3 (Giacomo): seeds 7-9-10-(23->29)
