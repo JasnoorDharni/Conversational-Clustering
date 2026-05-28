@@ -1,7 +1,7 @@
 # Study Plan — Conversational Clustering on the UCDP GEDEvent 25.1 Dataset
 
 **Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1 — filtered to Russia-Ukraine conflict\
-**Version:** v0.3
+**Version:** v0.4
 
 ---
 
@@ -12,6 +12,7 @@
 | v0.1 | 2026-05-13 | Initial draft. Research questions, hypotheses, and scope committed at Sprint 1 start. Methodology and evaluation strategy preliminary. |
 | v0.2 | 2026-05-20 | Updated after Sprint 1 completion. EDA findings incorporated: (1) `type_of_violence` and `side_a` dropped from F2 feature set due to near-zero variance (cardinality 2 and 1 respectively); (2) `where_description` embedding decision closed — excluded from feature sets, value over structured geographic features is marginal; (3) `adm_2` added to F2 cautiously given 19.8% null rate — decision documented; (4) geographic concentration finding noted (Donetsk 49.1%) with implication for F1 baseline interpretation; (5) two open questions from v0.1 resolved. Sprint 2 roadmap added. |
 | v0.3 | 2026-05-22 | Updated after Sprint 2 execution. (1) Open questions §7 updated: model string, prompt files, and K=8 marked as resolved; experimenter assignment order and rater recruitment still pending. (2) Execution status documented: Conditions A and C fully executed (120 runs, seeds 0–29, all complete). Condition B pending. (3) Preliminary result for H1 (Condition C) added. (4) Model version inconsistency between Condition A and C runs noted and flagged — protocol amendment registered in `docs/study_design.md §12`. (5) Sprint 2 roadmap updated with current completion status. |
+| v0.4 | 2026-05-28 | Updated during Condition B execution. (1) §9 execution status updated: B/F2 at 19/30, B/F1 at 3/30, all other conditions complete. (2) Remaining B seeds and per-person assignment documented. (3) New §10 added: results dashboard — a lightweight visualization tool planned to accompany the final analysis. (4) Dataset limitation noted: near-constant `side_a`/`side_b`/`type_of_violence` in the Russia-Ukraine subset reduces F2 effective dimensionality to geography + fatalities only. |
 
 ---
 
@@ -142,7 +143,7 @@ No UI beyond CLI output. No caching, auth, or extensibility abstractions.
 
 ### Still open
 
-- [ ] **Experimenter assignment order.** `config/experimenter_order.txt` exists but still contains `PENDING`. Must be filled before any Condition B session begins. **Blocking for Condition B.**
+- [x] **Experimenter assignment order.** `config/experimenter_order.txt` exists but still contains `PENDING`. Must be filled before any Condition B session begins. **Blocking for Condition B.**
 
 - [ ] **Human rater recruitment.** Target 5–8 raters; course peers as candidates. Rating form (Google Form) must be committed as a link in `docs/rating_instrument_link.txt` before any rater is recruited. Required for H3. **Blocking for H3.**
 
@@ -166,16 +167,24 @@ Sprint 1 delivered: EDA complete, study design and quality spec pre-registered, 
 
 ### 9.1 Run completion
 
-| Condition | Feature set | Seeds executed | Status |
+| Condition | Feature set | Seeds complete | Status |
 | --- | --- | --- | --- |
-| A | F1 | 0–29 | ✅ 30/30 complete |
-| A | F2 | 0–29 | ✅ 30/30 complete |
-| B | F1 | — | ❌ Not yet started — blocked on `experimenter_order.txt` |
-| B | F2 | — | ❌ Not yet started — blocked on `experimenter_order.txt` |
-| C | F1 | 0–29 | ✅ 30/30 complete |
-| C | F2 | 0–29 | ✅ 30/30 complete |
+| A | F1 | 30/30 | ✅ Complete |
+| A | F2 | 30/30 | ✅ Complete |
+| B | F1 | 3/30 | ⏳ In progress — seeds 6, 8, 11 done; 27 remaining |
+| B | F2 | 19/30 | ⏳ In progress — seeds 0–12, 17–22 done; seeds 13–16, 23–29 remaining |
+| C | F1 | 30/30 | ✅ Complete |
+| C | F2 | 30/30 | ✅ Complete |
 
-Total: **120 runs** in `runs/run_log.jsonl`, all with `status: complete`, zero refused or error entries.
+Total records in `runs/run_log.jsonl`: **142**, all with `status: complete`.
+
+**Condition B remaining work by person** (from `config/experimenter_order.txt`):
+
+| Person | B/F2 remaining | B/F1 remaining |
+| --- | --- | --- |
+| Daniele | seeds 13, 14, 15, 16 | seeds 0–5, 13–16 |
+| Jasnoor | — | seeds 12, 17–22 |
+| Giacomo | seeds 23–29 | seeds 7, 9, 10, 23–29 |
 
 ### 9.2 Preliminary results (Condition C vs A — pre-specified analysis)
 
@@ -188,8 +197,47 @@ These figures are from `notebooks/analysis.ipynb` executed on the completed log.
 | A — Baseline | 0.905 ± 0.001 | 0.894 ± 0.001 |
 | C — Oracle | 0.874 ± 0.167 | 0.863 ± 0.053 |
 
-**H1 (Condition C/F2 vs A/F2):** Wilcoxon p = 0.9992; median improvement = −0.007; bootstrap 95% CI = [−0.031, −0.001]. **H1 not supported for Condition C.** The oracle refinement does not improve on the baseline — it slightly degrades Silhouette in the majority of seeds (22/30 negative). This is a substantive finding: automated oracle-driven refinement under these prompt and feature configurations does not outperform one-shot k-means. The confirmatory test for H1 remains the human-driven Condition B, which is still pending.
+**H1 (Condition C/F2 vs A/F2):** Wilcoxon p = 0.9992; median improvement = −0.007; bootstrap 95% CI = \[−0.031, −0.001\]. **H1 not supported for Condition C.** The oracle refinement does not improve on the baseline — it slightly degrades Silhouette in the majority of seeds (22/30 negative). This is a substantive finding: automated oracle-driven refinement under these prompt and feature configurations does not outperform one-shot k-means. The confirmatory test for H1 remains the human-driven Condition B, which is still pending.
 
 **H2 (exploratory):** Cannot be computed until Condition B data is available.
 
 **H3:** Cannot be computed until human ratings are collected.
+
+### 9.3 Dataset limitation identified during Condition B execution
+
+During Condition B sessions it became clear that the Russia-Ukraine GED subset presents near-zero variance in actor identity and violence type: `side_a` is constant (100% Government of Russia), `side_b` is Government of Ukraine in 99.2% of events, and `type_of_violence` is state-based (type 1) in 99.2% of events. As a result, the conversational feature-weighting mechanism has effectively only two informative dimensions to explore: **geographic position** (lat/lon + adm1) and **fatality level**. Actor-based instructions in F2 sessions produce minimal effect. This limitation must be disclosed in the final report and is partially responsible for the low variance in F2 vs F1 Silhouette scores (0.863 vs 0.874 for Condition C).
+
+---
+
+## 10. Results Dashboard (added v0.4)
+
+### 10.1 Purpose and scope
+
+To accompany the final analysis, the team plans to build a **lightweight results dashboard** to visualize the experimental outputs interactively. The dashboard is a communication and exploration tool — it does not affect the pre-registered analysis in `docs/study_design.md`, does not modify `runs/run_log.jsonl`, and is not part of the experimental protocol.
+
+### 10.2 Planned technology
+
+**Streamlit** — chosen for its minimal setup (pure Python, no frontend code), direct compatibility with pandas/matplotlib/plotly, and ability to run locally from a single script file.
+
+```bash
+pip install streamlit plotly
+streamlit run dashboard/app.py
+```
+
+### 10.3 Planned views
+
+| View | Description |
+| --- | --- |
+| **Overview** | Summary table: mean Silhouette and Davies-Bouldin per (condition × feature set), with run count and status. Mirrors the summary table in `notebooks/analysis.ipynb §8`. |
+| **H1 — Condition comparison** | Box plot of final Silhouette scores for A vs B vs C, split by feature set. Per-seed improvement bar chart (B − A and C − A). |
+| **Per-turn trajectory** | Line plot of median Silhouette by turn number for Conditions B and C (F2). Individual seed traces shown faintly in the background. |
+| **Geographic cluster map** | For a selected run (condition, feature set, seed), a scatter map of the 2,000 events coloured by cluster assignment. Uses Plotly `scatter_mapbox` with OpenStreetMap tiles. |
+| **Run explorer** | Filterable table of all records in `run_log.jsonl`. Allows drill-down into individual run metadata, turn-by-turn instructions, and parsed feature weights. |
+
+### 10.4 Data source
+
+All views read exclusively from `runs/run_log.jsonl` and `data/sample_seed42.csv`. No recomputation of clustering is performed at runtime — the dashboard is read-only.
+
+### 10.5 Deliverable
+
+A single file `dashboard/app.py`, runnable with `streamlit run dashboard/app.py` from the repo root. To be committed once Condition B runs are complete and the full log is available.
