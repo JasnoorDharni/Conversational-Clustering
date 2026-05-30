@@ -1,7 +1,7 @@
 # Study Plan — Conversational Clustering on the UCDP GEDEvent 25.1 Dataset
 
 **Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1 — filtered to Russia-Ukraine conflict\
-**Version:** v0.4
+**Version:** v0.5
 
 ---
 
@@ -13,6 +13,7 @@
 | v0.2 | 2026-05-20 | Updated after Sprint 1 completion. EDA findings incorporated: (1) `type_of_violence` and `side_a` dropped from F2 feature set due to near-zero variance (cardinality 2 and 1 respectively); (2) `where_description` embedding decision closed — excluded from feature sets, value over structured geographic features is marginal; (3) `adm_2` added to F2 cautiously given 19.8% null rate — decision documented; (4) geographic concentration finding noted (Donetsk 49.1%) with implication for F1 baseline interpretation; (5) two open questions from v0.1 resolved. Sprint 2 roadmap added. |
 | v0.3 | 2026-05-22 | Updated after Sprint 2 execution. (1) Open questions §7 updated: model string, prompt files, and K=8 marked as resolved; experimenter assignment order and rater recruitment still pending. (2) Execution status documented: Conditions A and C fully executed (120 runs, seeds 0–29, all complete). Condition B pending. (3) Preliminary result for H1 (Condition C) added. (4) Model version inconsistency between Condition A and C runs noted and flagged — protocol amendment registered in `docs/study_design.md §12`. (5) Sprint 2 roadmap updated with current completion status. |
 | v0.4 | 2026-05-28 | Updated during Condition B execution. (1) §9 execution status updated: B/F2 at 19/30, B/F1 at 3/30, all other conditions complete. (2) Remaining B seeds and per-person assignment documented. (3) New §10 added: results dashboard — a lightweight visualization tool planned to accompany the final analysis. (4) Dataset limitation noted: near-constant `side_a`/`side_b`/`type_of_violence` in the Russia-Ukraine subset reduces F2 effective dimensionality to geography + fatalities only. |
+| v0.5 | 2026-05-29 | New §11 added: additional exploratory analyses planned post-hoc based on data available in `run_log.jsonl`. Four analyses documented: instruction taxonomy (B vs C), feature weight trajectory, instruction-weight alignment check, per-turn silhouette delta. All labeled exploratory; pre-registered H1/H2/H3 unchanged. Amendment A-002 registered in `docs/study_design.md §12`. |
 
 ---
 
@@ -87,6 +88,7 @@ Full specification in `docs/quality_spec.md` (v0.1, pre-registered).
 - **Primary:** Silhouette score (final assignment, sklearn euclidean).
 - **Secondary:** Davies-Bouldin index; turns to stable assignment (Δ &lt; 0.01).
 - **For RQ2:** Spearman's ρ + Cohen's κ (oracle vs. human majority vote); Krippendorff's α (inter-rater reliability, must be ≥ 0.40 before H3 proceeds).
+- **Additional exploratory analyses (added v0.5):** see §11.
 
 ### 4.4 Sample
 
@@ -241,3 +243,51 @@ All views read exclusively from `runs/run_log.jsonl` and `data/sample_seed42.csv
 ### 10.5 Deliverable
 
 A single file `dashboard/app.py`, runnable with `streamlit run dashboard/app.py` from the repo root. To be committed once Condition B runs are complete and the full log is available.
+
+---
+
+## 11. Additional Exploratory Analyses (added v0.5)
+
+These analyses are **post-hoc and exploratory**. They do not modify H1, H2, or H3, and are not part of the pre-registered confirmatory analysis in `docs/study_design.md`. They are documented here as required by the pre-registration amendment procedure (amendment A-002 in `docs/study_design.md §12`). All results derived from these analyses must be clearly labeled "exploratory" in the final report.
+
+Data source for all analyses: `runs/run_log.jsonl` (fields `turns[*].instruction`, `turns[*].parsed_params`, `turns[*].silhouette`). No additional data collection is required.
+
+### 11.1 Instruction taxonomy — B vs C comparison
+
+**Goal:** Characterise whether human experimenters (Condition B) and the LLM oracle (Condition C) systematically target different feature dimensions in their refinement instructions, and whether this difference explains the performance gap between the two conditions.
+
+**Method:** Each instruction in every B and C run is manually assigned to one of four categories: `geographic` (references position, oblast, location), `intensity` (references fatalities, casualties, deaths), `actor` (references who was involved), or `balance` (requests redistribution of weight across dimensions). Instructions that do not clearly fit any category are labeled `generic`. The distribution of categories is then compared between B and C across all turns and seeds.
+
+**Expected output:** A stacked bar chart (condition × instruction category × proportion) and a contingency table. Reported as a descriptive finding; no formal test.
+
+**Implementation:** Manual annotation of instructions extracted from `run_log.jsonl`; summary statistics in `notebooks/analysis.ipynb`.
+
+### 11.2 Feature weight trajectory per turn
+
+**Goal:** Visualise how the interpreter translates sequential instructions into feature weight paths over 5 turns, and compare the weight dynamics between Condition B and Condition C.
+
+**Method:** For each run in B and C (F2 feature set), extract the `parsed_params` dict at each turn. Plot weight trajectories for each of the six feature groups (latitude, longitude, adm1, event_type, actor, fatalities) over turns 1–5. Compute and report: median weight per feature per turn across all seeds; and the per-seed range (min/max band). Compare B vs C median trajectories on the same axes.
+
+**Expected output:** A 6-panel line plot (one per feature group), B and C overlaid. Highlights whether humans and oracle systematically push different features.
+
+**Implementation:** Fully automated from `run_log.jsonl`; to be added to `notebooks/analysis.ipynb`.
+
+### 11.3 Instruction-weight alignment check
+
+**Goal:** Validate that the LLM interpreter (`prompts/interpreter.md`) correctly translates instructions into feature weight updates — i.e., that a geographic instruction actually increases geographic weights and not unrelated ones.
+
+**Method:** For a stratified sample of 15–20 instructions (drawn from Condition B runs, covering all four instruction categories), manually verify whether the direction of the dominant weight change in `parsed_params` matches the intent of the instruction. Code each case as `aligned`, `partially aligned`, or `misaligned`. Report alignment rate per category.
+
+**Expected output:** A small table (instruction category × alignment rate). Reported as a system validation finding.
+
+**Implementation:** Manual inspection of selected run_log records; no code required beyond extraction.
+
+### 11.4 Per-turn silhouette delta analysis
+
+**Goal:** Determine whether improvement in Silhouette is concentrated in early turns (1–2) or distributed across all 5 turns, and whether the pattern differs between Condition B and C.
+
+**Method:** For each run in B and C, compute `Δ_sil(t) = silhouette(t) − silhouette(t−1)` where `silhouette(0)` is the baseline (Condition A equivalent at the same seed). Aggregate median Δ_sil by turn number across all seeds, separately for B and C. Report the proportion of positive vs negative deltas at each turn.
+
+**Expected output:** A bar chart of median Δ_sil by turn (B and C side by side), with a horizontal zero line. Shows whether the first instruction or later ones tend to drive improvement.
+
+**Implementation:** Fully automated from `run_log.jsonl`; to be added to `notebooks/analysis.ipynb`.
