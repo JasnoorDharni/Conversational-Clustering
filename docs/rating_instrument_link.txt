@@ -1,8 +1,1 @@
-# Rating Instrument Link
-# Status: TO BE FILLED before any rater is recruited.
-#
-# Once the Google Form is created (Person 1, Sprint 2), paste the link here
-# and commit. Do not share the link with raters before this file is committed.
-# Do not modify the form after the first rater completes it.
-
-PENDING
+https://docs.google.com/forms/d/e/1FAIpQLSc7CQSFXAqkhbCNmc3RNFThyfcK9s92g1wMM2Y8hIV5dnhOdA/viewform\?usp\=publish-editor
