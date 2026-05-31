@@ -1,0 +1,434 @@
+[
+  {
+    "case": 1,
+    "run_id": "B_F2_seed000",
+    "turn": 2,
+    "auto_category": "actor",
+    "instruction_summary": "Cluster 5 seems to be group",
+    "judgment": "TRUNCATED",
+    "note": "Istruzione tagliata, non classificabile"
+  },
+  {
+    "case": 2,
+    "run_id": "B_F2_seed000",
+    "turn": 3,
+    "auto_category": "geographic",
+    "instruction_summary": "Try weighting fatalities less so events distribute into geographic clusters",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "Interprete ha ridotto fatalities — corretto"
+  },
+  {
+    "case": 3,
+    "run_id": "B_F2_seed000",
+    "turn": 4,
+    "auto_category": "geographic",
+    "instruction_summary": "Reduce geography, increase fatalities",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "geography triggera il classificatore ma intent era fatalities — fatto"
+  },
+  {
+    "case": 4,
+    "run_id": "B_F2_seed001",
+    "turn": 2,
+    "auto_category": "intensity",
+    "instruction_summary": "Cluster 0 too big, mean fatalities don't match",
+    "judgment": "AMBIGUOUS",
+    "note": "Istruzione vaga, tutti i valori cambiati poco"
+  },
+  {
+    "case": 5,
+    "run_id": "B_F2_seed001",
+    "turn": 3,
+    "auto_category": "geographic",
+    "instruction_summary": "Geography dominating, increase fatalities and actor",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "Geo citata per criticarla, intent è balance — fatto"
+  },
+  {
+    "case": 6,
+    "run_id": "B_F2_seed002",
+    "turn": 1,
+    "auto_category": "geographic",
+    "instruction_summary": "Geometry too important. Increase actor and fatalities",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "Stesso pattern #05"
+  },
+  {
+    "case": 7,
+    "run_id": "B_F2_seed003",
+    "turn": 1,
+    "auto_category": "geographic",
+    "instruction_summary": "Decrease lat/lon, increase actor and fatalities",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "Geo citata per ridurla, actor aumentato"
+  },
+  {
+    "case": 8,
+    "run_id": "B_F2_seed003",
+    "turn": 2,
+    "auto_category": "actor",
+    "instruction_summary": "Add more importance to the actor",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Actor richiesto, fatalities cambiato invece"
+  },
+  {
+    "case": 9,
+    "run_id": "B_F2_seed003",
+    "turn": 3,
+    "auto_category": "intensity",
+    "instruction_summary": "Separate events by intensity, high fatalities own clusters",
+    "judgment": "PARTIAL",
+    "note": "Actor e fatalities entrambi delta=2.0"
+  },
+  {
+    "case": 10,
+    "run_id": "B_F2_seed004",
+    "turn": 5,
+    "auto_category": "intensity",
+    "instruction_summary": "Increase weight of actor and fatalities",
+    "judgment": "PARTIAL",
+    "note": "Actor aumentato, fatalities non cambiato"
+  },
+  {
+    "case": 11,
+    "run_id": "B_F2_seed005",
+    "turn": 2,
+    "auto_category": "intensity",
+    "instruction_summary": "Increase actor and fatalities",
+    "judgment": "PARTIAL",
+    "note": "Actor aumentato ma fatalities diminuito"
+  },
+  {
+    "case": 12,
+    "run_id": "B_F2_seed005",
+    "turn": 5,
+    "auto_category": "actor",
+    "instruction_summary": "Give a little more importance to actor weight",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Istruzione semplicissima, latitude cambiata invece"
+  },
+  {
+    "case": 13,
+    "run_id": "B_F2_seed006",
+    "turn": 4,
+    "auto_category": "intensity",
+    "instruction_summary": "Reduce mean fatalities of cluster 6",
+    "judgment": "AMBIGUOUS",
+    "note": "Obiettivo su cluster specifico, interprete ha distribuito i pesi"
+  },
+  {
+    "case": 14,
+    "run_id": "B_F2_seed006",
+    "turn": 5,
+    "auto_category": "intensity",
+    "instruction_summary": "Reduce mean fatalities assigning data proportionally",
+    "judgment": "AMBIGUOUS",
+    "note": "Tutti i pesi cambiati di 0.5 — risposta generica"
+  },
+  {
+    "case": 15,
+    "run_id": "B_F2_seed007",
+    "turn": 1,
+    "auto_category": "geographic",
+    "instruction_summary": "Cluster not based on oblast, give much more importance to actor",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "oblast triggera il classificatore, intent è actor — fatto"
+  },
+  {
+    "case": 16,
+    "run_id": "B_F2_seed007",
+    "turn": 4,
+    "auto_category": "intensity",
+    "instruction_summary": "Fatalities outliers into clusters, very low vs very high",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Actor cambiato di 4.7 invece di fatalities"
+  },
+  {
+    "case": 17,
+    "run_id": "B_F2_seed008",
+    "turn": 3,
+    "auto_category": "geographic",
+    "instruction_summary": "Give more weight to mean fatalities to spread values",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "spread triggera geo, fatalities cambiata"
+  },
+  {
+    "case": 18,
+    "run_id": "B_F2_seed009",
+    "turn": 2,
+    "auto_category": "geographic",
+    "instruction_summary": "Put remote locations and rare ones in same cluster",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Intent geografico, fatalities cambiata invece"
+  },
+  {
+    "case": 19,
+    "run_id": "B_F2_seed009",
+    "turn": 4,
+    "auto_category": "intensity",
+    "instruction_summary": "A bit more importance to mean fatalities too",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Chiarissimo, latitude cambiata (2.0) invece di fatalities (1.0)"
+  },
+  {
+    "case": 20,
+    "run_id": "B_F2_seed010",
+    "turn": 2,
+    "auto_category": "geographic",
+    "instruction_summary": "Cluster where civilians were more involved",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "where triggera geo, intent è actor (civilians) — fatto"
+  },
+  {
+    "case": 21,
+    "run_id": "B_F2_seed010",
+    "turn": 3,
+    "auto_category": "actor",
+    "instruction_summary": "Give more importance to dominant actor",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Latitude cambiata invece di actor"
+  },
+  {
+    "case": 22,
+    "run_id": "B_F2_seed011",
+    "turn": 3,
+    "auto_category": "intensity",
+    "instruction_summary": "Don't want cluster 3 to have such high mean fatalities",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Obiettivo su fatalità, actor cambiato di 2.0"
+  },
+  {
+    "case": 23,
+    "run_id": "B_F2_seed012",
+    "turn": 2,
+    "auto_category": "intensity",
+    "instruction_summary": "Cluster 6 mean fatalities need to be lower",
+    "judgment": "AMBIGUOUS",
+    "note": "adm1 cambiato — potrebbe essere strategia geografica per disperdere cluster"
+  },
+  {
+    "case": 24,
+    "run_id": "B_F2_seed012",
+    "turn": 5,
+    "auto_category": "geographic",
+    "instruction_summary": "The oblasts are too near",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Intent geografico (oblasts), actor cambiato invece"
+  },
+  {
+    "case": 25,
+    "run_id": "B_F2_seed017",
+    "turn": 5,
+    "auto_category": "actor",
+    "instruction_summary": "Cluster by dominant actor",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Fatalities delta=3.0, actor delta=2.5 — sbagliato di poco"
+  },
+  {
+    "case": 26,
+    "run_id": "B_F2_seed018",
+    "turn": 3,
+    "auto_category": "intensity",
+    "instruction_summary": "Aggregate elements with similar mean fatalities",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Tutti i pesi geografici cambiati, fatalities no"
+  },
+  {
+    "case": 27,
+    "run_id": "B_F2_seed019",
+    "turn": 3,
+    "auto_category": "actor",
+    "instruction_summary": "Now cluster based on dominant actor",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "adm1 delta=5.0, actor solo delta=3.0"
+  },
+  {
+    "case": 28,
+    "run_id": "B_F2_seed019",
+    "turn": 4,
+    "auto_category": "geographic",
+    "instruction_summary": "Give less weight to actor compared to dominant oblast",
+    "judgment": "PARTIAL",
+    "note": "Istruzione multi-dimensionale, adm1 e actor entrambi cambiati"
+  },
+  {
+    "case": 29,
+    "run_id": "B_F2_seed019",
+    "turn": 5,
+    "auto_category": "intensity",
+    "instruction_summary": "Give a bit more weight to fatalities number",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "adm1 delta=1.0, fatalities delta=0.5 — contrario"
+  },
+  {
+    "case": 30,
+    "run_id": "B_F2_seed021",
+    "turn": 2,
+    "auto_category": "intensity",
+    "instruction_summary": "Give more weight to the fatalities",
+    "judgment": "AMBIGUOUS",
+    "note": "adm1 e fatalities entrambi delta=0.7 — pari merito"
+  },
+  {
+    "case": 31,
+    "run_id": "B_F2_seed021",
+    "turn": 3,
+    "auto_category": "intensity",
+    "instruction_summary": "Mean fatalities should differ more between clusters",
+    "judgment": "AMBIGUOUS",
+    "note": "Tutti delta=0.5 — risposta generica bilanciata"
+  },
+  {
+    "case": 32,
+    "run_id": "B_F2_seed021",
+    "turn": 5,
+    "auto_category": "generic",
+    "instruction_summary": "I want all clusters to have at least 20 elements",
+    "judgment": "EXTREME",
+    "note": "Istruzione su dimensione cluster, interprete ha messo actor=9.2"
+  },
+  {
+    "case": 33,
+    "run_id": "B_F2_seed022",
+    "turn": 4,
+    "auto_category": "intensity",
+    "instruction_summary": "Divide cluster 1 based on fatalities number",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Fatalities delta=1.0, latitude delta=1.7"
+  },
+  {
+    "case": 34,
+    "run_id": "B_F2_seed013",
+    "turn": 3,
+    "auto_category": "intensity",
+    "instruction_summary": "Give more importance to fatalities and actor",
+    "judgment": "PARTIAL",
+    "note": "Actor aumentato, fatalities non cambiato"
+  },
+  {
+    "case": 35,
+    "run_id": "B_F2_seed014",
+    "turn": 1,
+    "auto_category": "intensity",
+    "instruction_summary": "Increase a lot actor and fatalities",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "Entrambi delta=2.0 — fatto esattamente quello richiesto"
+  },
+  {
+    "case": 36,
+    "run_id": "B_F2_seed014",
+    "turn": 2,
+    "auto_category": "geographic",
+    "instruction_summary": "Decrease the importance of latitude and longitude",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "lat/lon citati per ridurli, actor/fatalities aumentati — coerente"
+  },
+  {
+    "case": 37,
+    "run_id": "B_F2_seed023",
+    "turn": 3,
+    "auto_category": "geographic",
+    "instruction_summary": "Reduce geography importance, augment all other features",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "Intent è balance anti-geo — fatto"
+  },
+  {
+    "case": 38,
+    "run_id": "B_F2_seed023",
+    "turn": 5,
+    "auto_category": "actor",
+    "instruction_summary": "Give more importance to the dominant actor",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Fatalities delta=4.0, actor solo delta=1.5"
+  },
+  {
+    "case": 39,
+    "run_id": "B_F2_seed024",
+    "turn": 2,
+    "auto_category": "intensity",
+    "instruction_summary": "Put fatalities outliers in different clusters",
+    "judgment": "PARTIAL",
+    "note": "Actor delta=2.7, fatalities delta=2.5 — quasi pari"
+  },
+  {
+    "case": 40,
+    "run_id": "B_F2_seed024",
+    "turn": 4,
+    "auto_category": "intensity",
+    "instruction_summary": "High fatalities outliers should go to one cluster",
+    "judgment": "AMBIGUOUS",
+    "note": "Nessun cambio significativo (tutti delta=0.1)"
+  },
+  {
+    "case": 41,
+    "run_id": "B_F2_seed024",
+    "turn": 5,
+    "auto_category": "geographic",
+    "instruction_summary": "Give more importance to regions",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Intent geografico, fatalities delta=4.0"
+  },
+  {
+    "case": 42,
+    "run_id": "B_F2_seed015",
+    "turn": 3,
+    "auto_category": "intensity",
+    "instruction_summary": "Separate based on actor and fatalities",
+    "judgment": "CLASSIFIER_ERROR",
+    "note": "Entrambi delta=2.0 — fatto quello richiesto"
+  },
+  {
+    "case": 43,
+    "run_id": "B_F2_seed026",
+    "turn": 3,
+    "auto_category": "intensity",
+    "instruction_summary": "Reduce the importance of mean fatalities",
+    "judgment": "AMBIGUOUS",
+    "note": "Strategia alternativa: aumentare geo per ridurre peso relativo fatalities"
+  },
+  {
+    "case": 44,
+    "run_id": "B_F2_seed027",
+    "turn": 4,
+    "auto_category": "actor",
+    "instruction_summary": "Put dominant actor outliers with high occurrences in one cluster",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Actor intent, fatalities cambiata (turno 4)"
+  },
+  {
+    "case": 45,
+    "run_id": "B_F2_seed027",
+    "turn": 5,
+    "auto_category": "actor",
+    "instruction_summary": "Put dominant actor outliers with high occurrences in one cluster",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Actor intent, fatalities cambiata (turno 5)"
+  },
+  {
+    "case": 46,
+    "run_id": "B_F2_seed028",
+    "turn": 2,
+    "auto_category": "geographic",
+    "instruction_summary": "Put outliers regarding dominant oblast in same cluster",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Intent geografico, fatalities delta=2.5"
+  },
+  {
+    "case": 47,
+    "run_id": "B_F2_seed029",
+    "turn": 2,
+    "auto_category": "intensity",
+    "instruction_summary": "Put all low fatalities outliers in one cluster",
+    "judgment": "AMBIGUOUS",
+    "note": "Nessun cambio significativo (tutti delta=0.1)"
+  },
+  {
+    "case": 48,
+    "run_id": "B_F2_seed029",
+    "turn": 4,
+    "auto_category": "geographic",
+    "instruction_summary": "Give a bit more importance to dominant oblast",
+    "judgment": "TRUE_MISALIGNED",
+    "note": "Intent adm1/geografico, fatalities delta=4.0"
+  }
+]
