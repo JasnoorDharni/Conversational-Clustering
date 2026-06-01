@@ -18,13 +18,8 @@
 7. [Analysis](#7-analysis)
 8. [Results Dashboard](#8-results-dashboard)
 9. [Experimental Design Summary](#9-experimental-design-summary)
-10. [Current Status](#10-current-status)
-11. [Key Findings (Preliminary)](#11-key-findings-preliminary)
-12. [Data Provenance](#12-data-provenance)
-13. [Ethics Note](#13-ethics-note)
-14. [Team](#14-team)
-15. [Documentation Index](#15-documentation-index)
-
+10. [Data Provenance](#12-data-provenance)
+    
 ---
 
 ## 1. Project Overview
