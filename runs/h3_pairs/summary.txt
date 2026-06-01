@@ -1,0 +1,141 @@
+H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=H3 Cluster Pairs — Summary
+=
+
+Pair 01  [A vs B / F2 — human refinement perceptible?]
+  LEFT : A_F2_seed020  sil=0.8933
+  RIGHT: B_F2_seed020  sil=0.6795
+
+Pair 02  [A vs B / F2 — human refinement perceptible?]
+  LEFT : A_F2_seed003  sil=0.8933
+  RIGHT: B_F2_seed003  sil=0.8955
+
+Pair 03  [A vs B / F2 — human refinement perceptible?]
+  LEFT : A_F2_seed000  sil=0.8933
+  RIGHT: B_F2_seed000  sil=0.8949
+
+Pair 04  [A vs B / F2 — human refinement perceptible?]
+  LEFT : A_F2_seed023  sil=0.8933
+  RIGHT: B_F2_seed023  sil=0.8947
+
+Pair 05  [A vs B / F2 — human refinement perceptible?]
+  LEFT : A_F2_seed008  sil=0.8933
+  RIGHT: B_F2_seed008  sil=0.7719
+
+Pair 06  [A vs C / F2 — oracle refinement perceptible?]
+  LEFT : A_F2_seed010  sil=0.8933
+  RIGHT: C_F2_seed010  sil=0.7000
+
+Pair 07  [A vs C / F2 — oracle refinement perceptible?]
+  LEFT : A_F2_seed006  sil=0.8950
+  RIGHT: C_F2_seed006  sil=0.8543
+
+Pair 08  [A vs C / F2 — oracle refinement perceptible?]
+  LEFT : A_F2_seed028  sil=0.8933
+  RIGHT: C_F2_seed028  sil=0.8958
+
+Pair 09  [A vs C / F2 — oracle refinement perceptible?]
+  LEFT : A_F2_seed005  sil=0.8933
+  RIGHT: C_F2_seed005  sil=0.8533
+
+Pair 10  [A vs C / F2 — oracle refinement perceptible?]
+  LEFT : A_F2_seed026  sil=0.8933
+  RIGHT: C_F2_seed026  sil=0.8945
+
+Pair 11  [B vs C / F2 — human vs oracle differ?]
+  LEFT : B_F2_seed025  sil=0.9485
+  RIGHT: C_F2_seed025  sil=0.9013
+
+Pair 12  [B vs C / F2 — human vs oracle differ?]
+  LEFT : B_F2_seed004  sil=0.8927
+  RIGHT: C_F2_seed004  sil=0.8543
+
+Pair 13  [B vs C / F2 — human vs oracle differ?]
+  LEFT : B_F2_seed019  sil=0.8925
+  RIGHT: C_F2_seed019  sil=0.8543
+
+Pair 14  [B vs C / F2 — human vs oracle differ?]
+  LEFT : B_F2_seed002  sil=0.7497
+  RIGHT: C_F2_seed002  sil=0.8892
+
+Pair 15  [B vs C / F2 — human vs oracle differ?]
+  LEFT : B_F2_seed001  sil=0.7900
+  RIGHT: C_F2_seed001  sil=0.8711
+
+Pair 16  [A/F1 vs A/F2 — feature richness perceptible?]
+  LEFT : A_F1_seed009  sil=0.9044
+  RIGHT: A_F2_seed009  sil=0.8950
+
+Pair 17  [A/F1 vs A/F2 — feature richness perceptible?]
+  LEFT : A_F1_seed012  sil=0.9061
+  RIGHT: A_F2_seed012  sil=0.8933
+
+Pair 18  [A/F1 vs A/F2 — feature richness perceptible?]
+  LEFT : A_F1_seed027  sil=0.9061
+  RIGHT: A_F2_seed027  sil=0.8933
+
+Pair 19  [A/F1 vs A/F2 — feature richness perceptible?]
+  LEFT : A_F1_seed017  sil=0.9044
+  RIGHT: A_F2_seed017  sil=0.8933
+
+Pair 20  [A/F1 vs A/F2 — feature richness perceptible?]
+  LEFT : A_F1_seed018  sil=0.9044
+  RIGHT: A_F2_seed018  sil=0.8950

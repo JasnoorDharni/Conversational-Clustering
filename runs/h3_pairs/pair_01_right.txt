@@ -1,0 +1,47 @@
+Run:        B_F2_seed020
+Condition:  B  (Human conversational)
+Features:   F2  (Full features)
+Seed:       20
+Silhouette: 0.6795
+────────────────────────────────────────────────────────────
+Current clustering: K=8 clusters
+
+Cluster 0  (n=977)  dominant oblast: Donetsk oblast  |  dominant actor: Government of Ukraine  |  mean fatalities: 11.0
+    • 2023-01-04  Donetsk oblast  vs Government of Ukraine  fatalities=85
+    • 2023-10-02  Donetsk oblast  vs Government of Ukraine  fatalities=2
+    • 2023-08-24  Donetsk oblast  vs Government of Ukraine  fatalities=1
+
+Cluster 1  (n=101)  dominant oblast: Poltava oblast  |  dominant actor: Government of Ukraine  |  mean fatalities: 48.4
+    • 2022-10-16  nan  vs Government of Ukraine  fatalities=30
+    • 2022-08-03  nan  vs Government of Ukraine  fatalities=2
+    • 2022-12-12  nan  vs Government of Ukraine  fatalities=32
+
+Cluster 2  (n=258)  dominant oblast: Kherson oblast  |  dominant actor: Government of Ukraine  |  mean fatalities: 2.2
+    • 2024-10-23  Kherson oblast  vs Government of Ukraine  fatalities=1
+    • 2023-05-25  Kherson oblast  vs Government of Ukraine  fatalities=2
+    • 2023-12-30  Kherson oblast  vs Government of Ukraine  fatalities=1
+
+Cluster 3  (n=203)  dominant oblast: Kharkiv oblast  |  dominant actor: Government of Ukraine  |  mean fatalities: 3.4
+    • 2022-12-27  Kharkiv oblast  vs Government of Ukraine  fatalities=2
+    • 2023-04-27  Kharkiv oblast  vs Government of Ukraine  fatalities=1
+    • 2023-11-05  Kharkiv oblast  vs Government of Ukraine  fatalities=1
+
+Cluster 4  (n=205)  dominant oblast: Zaporizhzhya oblast  |  dominant actor: Government of Ukraine  |  mean fatalities: 2.1
+    • 2024-05-15  Dnipropetrovsk oblast  vs Government of Ukraine  fatalities=2
+    • 2023-05-09  Zaporizhzhya oblast  vs Government of Ukraine  fatalities=1
+    • 2024-03-23  Zaporizhzhya oblast  vs Government of Ukraine  fatalities=1
+
+Cluster 5  (n=11)  dominant oblast: Kyiv oblast  |  dominant actor: Civilians  |  mean fatalities: 1.4
+    • 2024-03-15  Kherson oblast  vs Civilians  fatalities=3
+    • 2022-09-10  Kharkiv oblast  vs Civilians  fatalities=2
+    • 2022-03-12  Donetsk oblast  vs Civilians  fatalities=1
+
+Cluster 6  (n=188)  dominant oblast: Luhansk oblast  |  dominant actor: Government of Ukraine  |  mean fatalities: 4.6
+    • 2023-11-08  Luhansk oblast  vs Government of Ukraine  fatalities=2
+    • 2024-02-09  Luhansk oblast  vs Government of Ukraine  fatalities=1
+    • 2024-10-15  Luhansk oblast  vs Government of Ukraine  fatalities=1
+
+Cluster 7  (n=57)  dominant oblast: Sumy oblast  |  dominant actor: Government of Ukraine  |  mean fatalities: 5.8
+    • 2024-04-07  Chernihiv oblast  vs Government of Ukraine  fatalities=1
+    • 2022-03-08  Kyiv oblast  vs Government of Ukraine  fatalities=2
+    • 2022-03-01  Chernihiv oblast  vs Government of Ukraine  fatalities=1

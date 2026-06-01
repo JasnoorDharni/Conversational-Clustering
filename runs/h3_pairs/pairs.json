@@ -1,0 +1,242 @@
+[
+  {
+    "group": "A vs B / F2 \u2014 human refinement perceptible?",
+    "seed": 20,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "B",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs B / F2 \u2014 human refinement perceptible?",
+    "seed": 3,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "B",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs B / F2 \u2014 human refinement perceptible?",
+    "seed": 0,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "B",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs B / F2 \u2014 human refinement perceptible?",
+    "seed": 23,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "B",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs B / F2 \u2014 human refinement perceptible?",
+    "seed": 8,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "B",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs C / F2 \u2014 oracle refinement perceptible?",
+    "seed": 10,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs C / F2 \u2014 oracle refinement perceptible?",
+    "seed": 6,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs C / F2 \u2014 oracle refinement perceptible?",
+    "seed": 28,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs C / F2 \u2014 oracle refinement perceptible?",
+    "seed": 5,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A vs C / F2 \u2014 oracle refinement perceptible?",
+    "seed": 26,
+    "left": {
+      "condition": "A",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "B vs C / F2 \u2014 human vs oracle differ?",
+    "seed": 25,
+    "left": {
+      "condition": "B",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "B vs C / F2 \u2014 human vs oracle differ?",
+    "seed": 4,
+    "left": {
+      "condition": "B",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "B vs C / F2 \u2014 human vs oracle differ?",
+    "seed": 19,
+    "left": {
+      "condition": "B",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "B vs C / F2 \u2014 human vs oracle differ?",
+    "seed": 2,
+    "left": {
+      "condition": "B",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "B vs C / F2 \u2014 human vs oracle differ?",
+    "seed": 1,
+    "left": {
+      "condition": "B",
+      "feature_set": "F2"
+    },
+    "right": {
+      "condition": "C",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A/F1 vs A/F2 \u2014 feature richness perceptible?",
+    "seed": 9,
+    "left": {
+      "condition": "A",
+      "feature_set": "F1"
+    },
+    "right": {
+      "condition": "A",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A/F1 vs A/F2 \u2014 feature richness perceptible?",
+    "seed": 12,
+    "left": {
+      "condition": "A",
+      "feature_set": "F1"
+    },
+    "right": {
+      "condition": "A",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A/F1 vs A/F2 \u2014 feature richness perceptible?",
+    "seed": 27,
+    "left": {
+      "condition": "A",
+      "feature_set": "F1"
+    },
+    "right": {
+      "condition": "A",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A/F1 vs A/F2 \u2014 feature richness perceptible?",
+    "seed": 17,
+    "left": {
+      "condition": "A",
+      "feature_set": "F1"
+    },
+    "right": {
+      "condition": "A",
+      "feature_set": "F2"
+    }
+  },
+  {
+    "group": "A/F1 vs A/F2 \u2014 feature richness perceptible?",
+    "seed": 18,
+    "left": {
+      "condition": "A",
+      "feature_set": "F1"
+    },
+    "right": {
+      "condition": "A",
+      "feature_set": "F2"
+    }
+  }
+]
