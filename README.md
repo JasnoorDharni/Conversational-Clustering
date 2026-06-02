@@ -231,7 +231,7 @@ Data source: `runs/run_log.jsonl` and `data/sample_seed42.csv`.
 | Level | Features |
 |---|---|
 | **F1** | Latitude, longitude, adm1 (one-hot) |
-| **F2** | F1 + event type (one-hot) + actor identity (one-hot, top-N) + best fatality estimate |
+| **F2** | F1 + `type_of_violence` (one-hot) + `side_b` actor identity (one-hot, top-N; remaining actors collapsed into `other`) + `best` fatality estimate, min-max normalised.|
 
 ### Key Parameters
 

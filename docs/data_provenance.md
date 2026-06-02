@@ -110,25 +110,25 @@ The following variables are present in UCDP GED 25.1 and are relevant to this pr
 | `year` | integer | Year of event | No (derived from date_start) |
 | `date_start` | date | First date of the event | Filter variable; temporal feature (exploratory) |
 | `date_end` | date | Last date of the event | Not used |
-| `type_of_violence` | integer (1/2/3) | 1=state-based, 2=non-state, 3=one-sided | **Yes — F2 feature set** |
+| `type_of_violence` | integer (1/2/3) | 1=state-based, 2=non-state, 3=one-sided | **Yes — F2 feature set; one-hot encoded** |
 | `conflict_name` | string | Name of the conflict | Not used directly |
 | `dyad_name` | string | Pair of conflicting actors | Not used directly |
-| `side_a` | string | Name of Side A actor (always government in state-based) | **Yes — F2 feature set** |
-| `side_b` | string | Name of Side B actor | **Yes — F2 feature set** |
+| `side_a` | string | Name of Side A actor | Not used; excluded because constant in the filtered subset |
+| `side_b` | string | Name of Side B actor | **Yes — F2 feature set; one-hot encoded, top-N by frequency** |
 | `country` | string | Country name where event occurred | Filter variable |
 | `country_id` | integer | Gleditsch-Ward country code | Filter variable (369 = Ukraine) |
-| `adm_1` | string | First-order administrative division (oblast) | **Yes — F1 and F2** |
-| `adm_2` | string | Second-order administrative division (raion) | F2 (supplementary) |
-| `latitude` | float | Latitude of event (geocoded) | **Yes — F1 and F2** |
-| `longitude` | float | Longitude of event (geocoded) | **Yes — F1 and F2** |
+| `adm_1` | string | First-order administrative division (oblast) | **Yes — F1 and F2; one-hot encoded** |
+| `adm_2` | string | Second-order administrative division (raion) | Not used; excluded because of nulls and high cardinality |
+| `latitude` | float | Latitude of event (geocoded) | **Yes — F1 and F2; min-max normalised** |
+| `longitude` | float | Longitude of event (geocoded) | **Yes — F1 and F2; min-max normalised** |
 | `geo_precision` | integer (1–4) | Spatial precision of geocoding (1=best) | Quality indicator; not a clustering feature |
-| `best` | integer | Best fatality estimate | **Yes — F2 feature set** |
-| `low` | integer | Low fatality estimate | Not used (use `best`) |
-| `high` | integer | High fatality estimate | Not used (use `best`) |
+| `best` | integer | Best fatality estimate | **Yes — F2 feature set; raw value min-max normalised in executed implementation** |
+| `low` | integer | Low fatality estimate | Not used |
+| `high` | integer | High fatality estimate | Not used |
 | `deaths_civilians` | integer | Civilian deaths (subset of `best`) | Not used in clustering |
 | `deaths_a` | integer | Deaths on Side A | Not used in clustering |
 | `deaths_b` | integer | Deaths on Side B | Not used in clustering |
-| `where_description` | string | Text description of the event location | Candidate for embedding (open question) |
+| `where_description` | string | Text description of the event location | Candidate|
 | `source_original` | string | Primary source for the event | Not used |
 | `active_year` | integer (0/1) | Whether the dyad was in an active year | Not used |
 
@@ -200,7 +200,7 @@ This is consistent with standard practice in unsupervised learning evaluation st
 | Max | 15,996 |
 | Events with best = 0 | 206 (0.7%) |
 
-*The distribution is strongly right-skewed, as expected for conflict event data. The median of 2 deaths per event confirms that most engagements are small-scale, while the maximum of 15,996 and the 99th percentile gap (74 vs. 15,996) indicate a small number of catastrophic outliers that will dominate a linear scale. **Log transformation of `best` is confirmed as necessary** before clustering, as specified in `docs/study_plan.md` §4.2. The 206 zero-fatality events (0.7%) require a decision on log-transform handling (e.g., log(best + 1)); this is pre-specified in the encoding strategy.*
+*The distribution is strongly right-skewed, as expected for conflict event data. The median of 2 deaths per event confirms that most engagements are small-scale, while the maximum of 15,996 and the 99th percentile gap indicate a small number of catastrophic outliers. A log transformation was considered during EDA, but the executed implementation used raw `best` fatalities with min-max normalisation. This choice must be reported as part of the feature-encoding limitations, because rare high-fatality events may still influence the fatality feature.*
 
 ### 5.4 Geographic precision
 
@@ -242,7 +242,7 @@ The top 3 oblasts (Donetsk, Kharkiv, Kherson) account for 70.1% of all events, c
 
 `side_a` is entirely dominated by a single actor — the Government of Russia appears in 100% of events, consistent with the state-based conflict type that makes up 99.2% of the subset (§5.2). This means the `side_a` one-hot column will be a zero-variance feature and should be dropped from the F2 feature set before clustering.
 
-`side_b` cardinality is substantially higher, reflecting the variety of Ukrainian government, military, and territorial defence units coded as the opposing actor. The `side_b` one-hot encoding will produce a sparse matrix with a small number of high-frequency entries (Government of Ukraine and its armed forces) alongside many low-frequency entries. Truncation to the top-N actors by frequency (as specified in `docs/study_design.md §2.2`) is confirmed as necessary.
+`side_b` is retained in the executed F2 implementation as the actor feature. It is one-hot encoded with top-N actor handling in `src/features.py`. However, in the Russia-Ukraine sample used for the experiment, `side_b` has very limited effective variation, so actor-based instructions are expected to have weaker effects than geographic or fatality-based instructions.
 
 Comma-separated actor names: 0 entries in both `side_a` and `side_b` (0.0%), so one-hot encoding does not require multi-label handling.
 
@@ -256,15 +256,14 @@ Comma-separated actor names: 0 entries in both `side_a` and `side_b` (0.0%), so 
 | Mean length (chars) | 46.3 |
 | Entries < 10 chars | 2,821 (10.4%) |
 
-97.1% of events have a non-null `where_description`. However, 10.4% of those entries are under 10 characters — too short to carry useful semantic content beyond what the structured `adm_1`/`adm_2` fields already provide. The median length of 32 characters and mean of 46.3 characters indicate descriptions are generally brief geographic references rather than rich narrative text. This resolves the open question in `docs/study_plan.md §7`: embedding `where_description` is feasible for the ~90% of entries exceeding 10 characters, but the incremental value over structured geographic features is expected to be modest. The decision to embed or exclude this field should be finalised before the first experimental run.
-
+97.1% of events have a non-null `where_description`. However, 10.4% of those entries are under 10 characters — too short to carry useful semantic content beyond what the structured `adm_1`/`adm_2` fields already provide. The median length of 32 characters and mean of 46.3 characters indicate descriptions are generally brief geographic references rather than rich narrative text. This resolves the open question in `docs/study_plan.md §7`: embedding `where_description` is feasible for the ~90% of entries exceeding 10 characters, but the incremental value over structured geographic features is modest. The field was therefore excluded from the executed feature sets: no text embeddings were used in F1 or F2.
 ### 5.8 Key data quality observations
 
 *EDA completed. Confirmed observations:*
 
 - [x] **Duplicate IDs: 0.** No duplicate event IDs in the filtered subset (27,942 events, 0 duplicates confirmed by EDA script).
-- [x] **`best` is fully populated.** 206 events have `best = 0` (0.7%), confirming the field is non-null throughout but that zero-fatality records exist. Log(best + 1) transform is required.
-- [x] **Event type is near-constant.** Type 2 (non-state conflict) has zero occurrences; type 1 accounts for 99.2%. The `type_of_violence` one-hot column will contribute negligible variance in F2 clustering — effectively a near-zero-variance feature. Consider whether to retain or drop it from F2.
+- [x] **`best` is fully populated.** 206 events have `best = 0` (0.7%), confirming the field is non-null throughout but that zero-fatality records exist. The executed implementation used raw `best` with min-max normalisation, not `log(best + 1)`.
+- [x] **Event type is near-constant but retained in executed F2.** Type 2 (non-state conflict) has zero occurrences; type 1 accounts for 99.2%. The `type_of_violence` one-hot column contributes limited variance, but it remains part of the executed F2 feature matrix.
 - [x] **Sample successfully drawn.** N = 2,000 events sampled with seed 42 from the 27,942-event filtered subset (14.3% sample fraction). Sample MD5 confirmed (`a92a9a2dc2bec3a0dfa3accb6759daf0`).
 - [x] **Null rate in `adm_1`: 1,910 nulls (6.84%).** These events retain valid coordinates and will contribute to geographic features but not to adm_1 one-hot columns. Imputation is not required; null adm_1 rows are handled by dropping the adm_1 column entry for those events.
 - [x] **Null rate in `latitude` / `longitude`: 0 (0.00%).** Confirmed by EDA script. All events have valid coordinates — geographic features are fully usable without imputation.

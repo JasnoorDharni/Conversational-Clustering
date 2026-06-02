@@ -15,6 +15,7 @@
 | v0.4 | 2026-05-28 | Updated during Condition B execution. (1) §9 execution status updated: B/F2 at 19/30, B/F1 at 3/30, all other conditions complete. (2) Remaining B seeds and per-person assignment documented. (3) New §10 added: results dashboard — a lightweight visualization tool planned to accompany the final analysis. (4) Dataset limitation noted: near-constant `side_a`/`side_b`/`type_of_violence` in the Russia-Ukraine subset reduces F2 effective dimensionality to geography + fatalities only. |
 | v0.5 | 2026-05-29 | New §11 added: additional exploratory analyses planned post-hoc based on data available in `run_log.jsonl`. Four analyses documented: instruction taxonomy (B vs C), feature weight trajectory, instruction-weight alignment check, per-turn silhouette delta. All labeled exploratory; pre-registered H1/H2/H3 unchanged. Amendment A-002 registered in `docs/study_design.md §12`. |
 
+| v0.6 | 2026-06-02 | Documentation aligned with the executed F2 implementation: F2 includes `type_of_violence`, `side_b`, and raw `best` fatalities min-max normalised; `side_a`, `adm_2`, and `where_description` are excluded.|
 ---
 
 ## 1. Context and Motivation
@@ -69,17 +70,19 @@ Full operationalisation is in `docs/study_design.md` (v0.1, pre-registered). Key
 
 ### 4.2 Feature Sets
 
-| Level | Features included | EDA notes |
+| Level | Features included | EDA / implementation notes |
 | --- | --- | --- |
-| F1 — Location-only | latitude, longitude (continuous, min-max normalised) + adm_1 (one-hot, 26 oblasts, 6.8% nulls handled by dropping column entry) | Clean. Severe geographic concentration (Donetsk 49.1%) will produce one dominant cluster — disclosed as F1 limitation. |
-| F2 — Full | F1 + side_b actor identity (one-hot, cardinality 2 after EDA) + best fatality estimate (log(best+1), min-max normalised) | `type_of_violence` dropped (99.2% type 1, near-zero variance). `side_a` dropped (cardinality 1 — always "Government of Russia"). `adm_2` excluded given 19.8% null rate and 128-level cardinality (would dominate one-hot space). `where_description` excluded (median 32 chars; marginal value over structured geographic features per §5.7 of data_provenance.md). |
+| F1 — Location-only | `latitude`, `longitude` continuous features, min-max normalised + `adm_1` one-hot encoded. Missing `adm_1` values are encoded as `unknown`. | Clean geographic feature set. Severe geographic concentration, especially Donetsk oblast, should be disclosed as an F1 limitation. |
+| F2 — Full | F1 + `type_of_violence` one-hot + `side_b` actor identity one-hot, top-N by frequency + `best` fatality estimate, min-max normalised. | This is the executed implementation in `src/features.py`. `side_a`, `adm_2`, and `where_description` are excluded. The executed code used raw `best`, not `log(best + 1)`. |
 
-**Decision log (v0.2 additions):**
+**Decision / implementation log:**
 
-- `type_of_violence` excluded from F2: cardinality 2, 99.2% type 1 — near-zero variance column adds noise without signal.
-- `side_a` excluded from F2: cardinality 1 throughout filtered subset — constant column, no clustering value.
-- `where_description` excluded from both feature sets: median length 32 chars; EDA concluded incremental value over structured geographic features is modest; embedding adds complexity without proportionate analytical benefit.
-- `adm_2` excluded from F2: 19.8% null rate + 128-category one-hot would create a 128-dimensional sparse block dominating the feature space. May be revisited in future work.
+- `type_of_violence` was retained in the executed F2 implementation, although EDA showed near-zero variance.
+- `side_b` was retained as the actor feature, one-hot encoded with top-N actor handling.
+- `side_a` was excluded because it is constant in the filtered subset.
+- `adm_2` was excluded because of nulls and high cardinality.
+- `where_description` was excluded because the expected value of text embeddings was considered too small for the added complexity.
+- `best` fatalities were used as raw values with min-max normalisation.
 
 ### 4.3 Outcome Measures
 
@@ -131,7 +134,7 @@ No UI beyond CLI output. No caching, auth, or extensibility abstractions.
 
 - [x] `where_description` **embedding.** Decided: excluded. Median 32 chars; marginal value over structured geographic features per EDA §5.7.
 
-- [x] `type_of_violence` **and** `side_a` **in F2.** Decided: both excluded due to near-zero variance (EDA cardinality table).
+- [x] `type_of_violence`, `side_a`, and `side_b` in F2. Final executed implementation: `type_of_violence` retained, `side_b` retained, `side_a` excluded because it is constant.
 
 - [x] **Ethical classification.** UCDP GED is publicly available, covers no individual persons, published by Uppsala University under academic terms. No IRB required. Human rater consent procedure documented in `docs/study_design.md §10`.
 
@@ -207,7 +210,7 @@ These figures are from `notebooks/analysis.ipynb` executed on the completed log.
 
 ### 9.3 Dataset limitation identified during Condition B execution
 
-During Condition B sessions it became clear that the Russia-Ukraine GED subset presents near-zero variance in actor identity and violence type: `side_a` is constant (100% Government of Russia), `side_b` is Government of Ukraine in 99.2% of events, and `type_of_violence` is state-based (type 1) in 99.2% of events. As a result, the conversational feature-weighting mechanism has effectively only two informative dimensions to explore: **geographic position** (lat/lon + adm1) and **fatality level**. Actor-based instructions in F2 sessions produce minimal effect. This limitation must be disclosed in the final report and is partially responsible for the low variance in F2 vs F1 Silhouette scores (0.863 vs 0.874 for Condition C).
+During Condition B sessions it became clear that the F2 feature space has limited effective variation beyond geography and fatalities. In the executed sample, `type_of_violence` and `side_b` have very low variance: almost all events are state-based and involve `Government of Ukraine` as `side_b`, while the minority one-sided violence cases correspond to civilians. Therefore, although F2 technically includes six feature-weight groups (`latitude`, `longitude`, `adm1`, `event_type`, `actor`, `fatalities`), the most informative dimensions are geographic position and fatality level. Actor-based and event-type instructions may therefore have limited effect.
 
 ---
 
@@ -266,7 +269,7 @@ Data source for all analyses: `runs/run_log.jsonl` (fields `turns[*].instruction
 
 **Goal:** Visualise how the interpreter translates sequential instructions into feature weight paths over 5 turns, and compare the weight dynamics between Condition B and Condition C.
 
-**Method:** For each run in B and C (F2 feature set), extract the `parsed_params` dict at each turn. Plot weight trajectories for each of the six feature groups (latitude, longitude, adm1, event_type, actor, fatalities) over turns 1–5. Compute and report: median weight per feature per turn across all seeds; and the per-seed range (min/max band). Compare B vs C median trajectories on the same axes.
+**Method:** For each run in B and C (F2 feature set), extract the `parsed_params` dict at each turn. Plot weight trajectories for each of the six implemented F2 feature groups (`latitude`, `longitude`, `adm1`, `event_type`, `actor`, `fatalities`) over turns 1–5. Here, `event_type` corresponds to `type_of_violence`, `actor` corresponds to `side_b`, and `fatalities` corresponds to raw `best` fatalities after min-max normalisation. Compute and report: median weight per feature per turn across all seeds; and the per-seed range (min/max band). Compare B vs C median trajectories on the same axes.
 
 **Expected output:** A 6-panel line plot (one per feature group), B and C overlaid. Highlights whether humans and oracle systematically push different features.
 
