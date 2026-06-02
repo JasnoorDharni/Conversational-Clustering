@@ -1,7 +1,7 @@
 # Study Plan — Conversational Clustering on the UCDP GEDEvent 25.1 Dataset
 
 **Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1 — filtered to Russia-Ukraine conflict\
-**Version:** v0.5
+**Version:** v0.7
 
 ---
 
@@ -16,6 +16,7 @@
 | v0.5 | 2026-05-29 | New §11 added: additional exploratory analyses planned post-hoc based on data available in `run_log.jsonl`. Four analyses documented: instruction taxonomy (B vs C), feature weight trajectory, instruction-weight alignment check, per-turn silhouette delta. All labeled exploratory; pre-registered H1/H2/H3 unchanged. Amendment A-002 registered in `docs/study_design.md §12`. |
 
 | v0.6 | 2026-06-02 | Documentation aligned with the executed F2 implementation: F2 includes `type_of_violence`, `side_b`, and raw `best` fatalities min-max normalised; `side_a`, `adm_2`, and `where_description` are excluded.|
+| v0.7 | 2026-06-02 | H3 execution and interpretation recorded. Five human raters completed the 20-pair task, the oracle was rerun with original and swapped displayed A/B order, and H3 is now interpreted as **not supported** because the oracle showed strong displayed-label bias (19/20 pairs kept the same displayed label after swapping) and low human inter-rater reliability (Krippendorff's α = 0.13). |
 ---
 
 ## 1. Context and Motivation
@@ -150,7 +151,7 @@ No UI beyond CLI output. No caching, auth, or extensibility abstractions.
 
 - [x] **Experimenter assignment order.** `config/experimenter_order.txt` exists but still contains `PENDING`. Must be filled before any Condition B session begins. **Blocking for Condition B.**
 
-- [ ] **Human rater recruitment.** Target 5–8 raters; course peers as candidates. Rating form (Google Form) must be committed as a link in `docs/rating_instrument_link.txt` before any rater is recruited. Required for H3. **Blocking for H3.**
+- [x] **Human rater recruitment.** Five raters completed the 20-pair Google Form instrument. H3 is therefore executable, but the resulting reference signal is weak (Krippendorff's α = 0.13), which materially limits interpretation.
 
 ---
 
@@ -206,7 +207,9 @@ These figures are from `notebooks/analysis.ipynb` executed on the completed log.
 
 **H2 (exploratory):** Cannot be computed until Condition B data is available.
 
-**H3:** Cannot be computed until human ratings are collected.
+**H3:** Now computed on 20 held-out pairwise comparisons with 5 human raters. The result is **not supportive** of the oracle-as-proxy claim. Human inter-rater reliability is low (Krippendorff's α = 0.13), original-order oracle-human agreement is only 13/20 = 0.65 (κ = 0.22, ρ = 0.24), and the swap diagnostic is the decisive issue: the oracle preserved the same displayed label after swapping A/B in 19 of 20 pairs, while preserving the same underlying clustering in only 1 of 20 pairs. This pattern is far more consistent with displayed-label bias than with stable qualitative judgment, so H3 should be reported as failed rather than merely inconclusive.
+
+**Why the 13/20 agreement is misleading.** Human majority vote itself was skewed toward displayed `B` (12 of 20 pairs), and the oracle original-order choices were even more skewed toward displayed `B` (15 of 20 pairs). That creates superficial agreement without showing that the oracle is tracking the same underlying clusterings. The group-level original-order agreement rates are therefore not persuasive on their own: 0.60 for A vs B pairs, 0.80 for A vs C pairs, 0.60 for B vs C pairs, and 0.60 for A/F1 vs A/F2 pairs. Once the labels are swapped, that apparent agreement collapses for 19 of the 20 pairs.
 
 ### 9.3 Dataset limitation identified during Condition B execution
 

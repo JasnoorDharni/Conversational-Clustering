@@ -2,7 +2,7 @@
 
 **Project:** Conversational Clustering  
 **Document:** `docs/study_design.md`  
-**Version:** v0.1  
+**Version:** v0.2  
 **Status:** Pre-registration draft — committed before any experimental runs
 
 ---
@@ -12,6 +12,7 @@
 | Version | Date | Summary of changes |
 |---|---|---|
 | v0.1 | 2026-05-19 | Initial study design committed at Sprint 1/2 boundary. Factor structure, conditions, outcome measures, decision rules, and sample-size justification pre-specified. Randomization plan and stratification to be finalised in v0.2 before main experiment runs. |
+| v0.2 | 2026-06-02 | H3 oracle-evaluation documentation updated post-hoc to record original/swapped A/B diagnostics, displayed-label-bias interpretation, and the corresponding amendment in §12. |
 
 ---
 
@@ -104,8 +105,10 @@ The following are held constant across all experimental runs to isolate the effe
 **Spearman's ρ** between LLM oracle cluster rankings and human rater rankings on a held-out sample of 20 cluster pair comparisons.
 
 - Oracle ranking: for each pair (cluster assignment X, cluster assignment Y), the oracle is prompted to choose which grouping "makes more sense as a meaningful category of conflict event" (forced-choice, mirroring the human instrument).
+- Each oracle judgement is collected in both the original displayed A/B order and a swapped displayed A/B order, while keeping the underlying pair fixed.
 - Human ranking: aggregated from 5–8 raters using majority vote. Inter-rater agreement reported as Krippendorff's α.
 - **Decision rule for H3:** Reject the null (ρ ≤ 0.7) if the point estimate exceeds 0.7 and the bootstrap 95% CI lower bound exceeds 0.5 (a conservative floor). A point estimate above 0.7 with a wide CI that includes 0.5 will be reported as inconclusive, not confirmatory.
+- **Bias-control rule for H3:** if the oracle preserves the same displayed label after swapping A/B rather than the same underlying clustering, that is interpreted as response-position / label bias and H3 is treated as not supported.
 
 ---
 
@@ -165,6 +168,7 @@ The instrument is committed as a versioned Google Form (link in `docs/rating_ins
 | Run seeds | Seeds 0–29 assigned sequentially. Order of execution randomised per condition using `random.shuffle` with seed 100 (logged). |
 | Condition B experimenter assignment | Condition B sessions for a given seed assigned to team members by a pre-drawn random order (committed to `config/experimenter_order.txt`). No experimenter runs more than 10 sessions to reduce habituation effects. |
 | Human rater pair order | For each rater, the 20 pairs are presented in a randomised order (individual per-rater seed). Within each pair, the left/right position of the two cluster descriptions is randomised. |
+| Oracle evaluation order | For H3, each pair is evaluated twice by the oracle: once in the original human A/B assignment and once with A/B swapped. This is a diagnostic for displayed-label bias, not prompt A/B testing. |
 | Oracle prompt variant | A single versioned oracle prompt is used throughout (no A/B prompt testing in this study). Prompt sensitivity is flagged as a limitation (§9). |
 
 ---
@@ -179,7 +183,7 @@ All analyses are pre-specified. Deviations will be noted in the final report.
 
 3. **H2 (exploratory).** Compare the B−A improvement under F1 vs. F2 using a Mann-Whitney U test on the per-seed improvement scores. Report without correcting for multiple comparisons; label as exploratory.
 
-4. **H3 test.** Compute Spearman's ρ between oracle and human majority-vote rankings on the 20 pairs. Bootstrap 95% CI (10,000 samples). Report Krippendorff's α among human raters as a validity check on the human-rating data.
+4. **H3 test.** Compute Spearman's ρ between oracle and human majority-vote rankings on the 20 pairs. Bootstrap 95% CI (10,000 samples). Report Krippendorff's α among human raters as a validity check on the human-rating data. Report both original displayed-order agreement and a bias-controlled analysis that asks whether original and swapped oracle trials converge on the same underlying clustering.
 
 5. **Robustness check.** Repeat H1 analysis using Davies-Bouldin as the outcome measure (lower = better; flip the comparison direction). If conclusions diverge between Silhouette and Davies-Bouldin, report both and note the discrepancy.
 
@@ -195,6 +199,7 @@ The following alternative explanations are **not** eliminated by this design. Th
 |---|---|
 | **Experimenter demand effects (Condition B).** The team member conducting Condition B sessions knows the study hypothesis and may unconsciously issue more effective instructions. | We do not use blind experimenters or naive users. Condition C (oracle) partially mitigates this, but the oracle prompt was written by the same team. |
 | **Oracle self-agreement bias (H3).** The LLM oracle used to evaluate cluster pairs in H3 is the same model used to generate Condition C cluster assignments. It may prefer its own output style. | We cannot randomise the evaluating model in this study. The bias is flagged; future work should use a different model for evaluation. |
+| **Oracle displayed-label bias (H3).** The oracle may anchor on the displayed option label or position rather than the underlying clustering content. | Original/swapped-order diagnostics were added for H3. Repeated same-label behaviour after swapping is treated as evidence against the oracle-as-proxy claim. |
 | **Fixed-K confound.** Fixing K = 8 may advantage the conversational conditions if a user's refinements effectively move the solution closer to the "true" K, whatever that is. | K is fixed to make conditions comparable, but this means we are not testing whether conversational refinement helps users find a better K. This is a scope limitation, not a flaw. |
 | **Feature encoding choices.** The implemented F2 representation includes low-variance categorical blocks (`type_of_violence` and `side_b`) and raw min-max normalised fatalities. This may reduce the effective difference between F1 and F2 and may make rare high-fatality events influential. | We do not test alternative encodings such as target encoding, text embeddings, or log-transformed fatalities. The encoding is held constant across conditions to preserve comparability. |
 | **Prompt sensitivity (oracle and interpreter).** Results may be sensitive to the specific wording of the interpreter and oracle prompts. | We use a single prompt version. Prompt sensitivity is an open question identified in `docs/related_work.md` (§3) and is not addressed here. |
@@ -226,6 +231,7 @@ This document is in **draft (pre-registration)** status. It becomes locked when 
 
 | Amendment | Date | Description | Rationale |
 |---|---|---|---|
-| A-003 | 2026-06-02 | **Feature-set documentation aligned with executed implementation.** The executed `src/features.py` implementation defines F2 as F1 + `type_of_violence` one-hot + `side_b` one-hot + raw `best` fatalities min-max normalised. `side_a`, `adm_2`, and `where_description` are excluded.|
+| A-004 | 2026-06-02 | **H3 oracle-evaluation diagnostic amendment.** The H3 oracle procedure now evaluates each pair in both original and swapped displayed A/B order and distinguishes agreement on the displayed label from agreement on the same underlying clustering. | The first oracle pass showed a suspicious displayed-label pattern. This amendment makes label bias directly testable instead of silently absorbing it into the agreement statistic. |
+| A-003 | 2026-06-02 | **Feature-set documentation aligned with executed implementation.** The executed `src/features.py` implementation defines F2 as F1 + `type_of_violence` one-hot + `side_b` one-hot + raw `best` fatalities min-max normalised. `side_a`, `adm_2`, and `where_description` are excluded.| 
 | A-002 | 2026-05-29 | **Post-hoc exploratory analyses added.** Four additional analyses planned after Condition B data collection began: (1) instruction taxonomy comparing B vs C instruction categories; (2) feature weight trajectory over turns for B and C; (3) instruction-weight alignment check validating the interpreter prompt; (4) per-turn silhouette delta analysis. All four are explicitly labeled **exploratory** and do not modify H1, H2, or H3. The pre-registered confirmatory analysis plan in §8 is unchanged. Full specification in `docs/study_plan.md §11`. |
 | A-001 | 2026-05-22 | **Model version inconsistency between Condition A and Condition C runs.** Condition A runs (60 runs, seeds 0–29, F1+F2) were executed while `config/model.yaml` still contained the string `claude-sonnet-4-20250514`. The string was subsequently corrected to `claude-sonnet-4-5` (commit `b90e7c0`). All Condition C runs use `claude-sonnet-4-5`. The two strings refer to the same underlying model family; the format change was a naming correction, not a model upgrade. **Impact:** Condition A does not call the LLM at any point (it is a one-shot k-means run), so the logged model string in Condition A records is informational only and has no effect on any computed metric. No replication of Condition A is required. The discrepancy is reported here for transparency and completeness of the audit trail. |

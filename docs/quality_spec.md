@@ -2,7 +2,7 @@
 
 **Project:** Conversational Clustering  
 **Document:** `docs/quality_spec.md`  
-**Version:** v0.1  
+**Version:** v0.2  
 **Status:** Pre-registered — committed before any experimental runs or human rating sessions
 
 ---
@@ -12,6 +12,7 @@
 | Version | Date | Summary of changes |
 |---|---|---|
 | v0.1 | 2026-05-19 | Initial quality spec committed at Sprint 1/2 boundary. Defines quality dimensions, operationalisations, measurement methods, and decision rules for all metrics reported in the final paper. Locked against post-hoc revision once the first run log entry is written (same lock event as `docs/study_design.md`). |
+| v0.2 | 2026-06-02 | H3 proxy-validity measurement updated post-hoc to document original/swapped oracle evaluation, displayed-label-bias diagnostics, and the interpretation rule used after the suspicious first oracle pass. |
 
 ---
 
@@ -39,6 +40,7 @@ The table below maps the standard quality dimensions from the course framework t
 | **Cluster cohesion and separation** | ✅ Primary | The core technical quality of a clustering. Operationalised via Silhouette score (primary) and Davies-Bouldin index (secondary). |
 | **Human interpretability** | ✅ Secondary | Whether a human judge finds the resulting clusters meaningful as categories of conflict event. Operationalised via forced-choice pairwise human rating. |
 | **Oracle–human agreement (proxy validity)** | ✅ Confirmatory (H3) | Whether the LLM oracle's quality rankings correlate with human rankings. Operationalised via Spearman's ρ and Cohen's κ on the forced-choice judgements. |
+| **Position-bias resistance** | ✅ Required for H3 interpretation | Whether the oracle tracks the same underlying clustering after A/B labels are swapped, rather than preserving the same displayed label. |
 | **Inter-rater reliability** | ✅ Required | Krippendorff's α across human raters on the pairwise judgement task. Reported before oracle-correlation results are interpreted. |
 | **Faithfulness / grounding** | ❌ Out of scope | The system does not generate text claims about the world; it produces cluster assignments. Hallucination is not a meaningful construct here. |
 | **Calibration** | ❌ Out of scope | The system does not produce probabilistic outputs or confidence scores. |
@@ -119,6 +121,7 @@ This is a claim about **measurement equivalence**, not about which ranking is "c
 
 **Measurement procedure.**
 - For each of the 20 pairs, the oracle receives the same prompt and the same cluster descriptions as human raters (the forced-choice instrument from `docs/study_design.md` §6.2), with no additional context about the study or conditions.
+- Each pair is evaluated twice by the oracle: once in the original displayed A/B order used for humans, and once with displayed A/B swapped while keeping the underlying pair fixed.
 - Oracle output is a binary preference (A or B). Ties are not possible for the oracle (the prompt forbids "no preference").
 - Human output is majority vote over 5–8 raters per pair; ties excluded (see §3.3).
 - Spearman's ρ is computed over the 20 (oracle choice, human majority choice) pairs, treating each as a binary outcome (1 = same choice, 0 = different choice). Equivalently, ρ here reduces to a point-biserial correlation, but we report it as Spearman's for consistency with H3's framing.
@@ -139,9 +142,19 @@ This is a claim about **measurement equivalence**, not about which ranking is "c
 - 0.60 ≤ κ < 0.80: substantial — oracle is an acceptable proxy.
 - κ ≥ 0.80: near-perfect — oracle can substitute for human rating.
 
-κ is reported alongside Spearman's ρ. If ρ > 0.7 but κ < 0.40, the confirmatory threshold for H3 is not considered met (the rank correlation may be driven by marginal distributions rather than genuine agreement on individual pairs).
+κ is reported alongside Spearman's ρ. If ρ > 0.7 but κ < 0.40, the confirmatory threshold for H3 is not considered met (the rank correlation may be driven by marginal distributions rather than genuine agreement on individual pairs). Likewise, if the oracle preserves the same displayed label after swapping A/B rather than the same underlying clustering, κ from the original-order pass is treated as contaminated by displayed-label bias and cannot by itself support H3.
 
-### 4.4 Inter-Rater Reliability Among Human Raters
+### 4.4 Position-Bias Diagnostic
+
+**What it measures.** Whether the oracle tracks the same underlying clustering after the displayed A/B labels are swapped.
+
+**Measurement procedure.**
+- For each pair, compare original-order and swapped-order oracle choices in two ways: whether the same underlying side / run was chosen, and whether the same displayed label was repeated.
+- A pair is flagged for displayed-label bias if the oracle keeps the same displayed label after the swap but does **not** keep the same underlying clustering.
+
+**Interpretation rule.** If this pattern dominates the 20 pairs, H3 is treated as failed due to response-position / label bias even if original-order agreement looks acceptable.
+
+### 4.5 Inter-Rater Reliability Among Human Raters
 
 **What it measures.** Agreement among the 5–8 human raters on the pairwise forced-choice task, before computing the majority vote used in H3. Low inter-rater reliability would undermine the validity of the human reference standard.
 
@@ -180,7 +193,7 @@ This study uses the LLM oracle both as a simulated user (Condition C) and as a p
 
 2. **Agreement statistic:** Cohen's κ is reported (§4.3). Spearman's ρ alone is insufficient because it can be inflated by marginal-distribution effects in a binary outcome.
 
-3. **Bias disclosure:** The oracle is the same model and, in Condition C, the same prompt configuration that generated some of the cluster assignments being rated. This creates a self-preference risk. This is disclosed in the paper's limitations section (see §7 of this document) and is not mitigated within this study's scope.
+3. **Bias disclosure:** The oracle is the same model and, in Condition C, the same prompt configuration that generated some of the cluster assignments being rated. This creates a self-preference risk and a displayed-label bias risk. Both are disclosed in the paper's limitations section (see §7 of this document).
 
 4. **Prompt text:** The oracle evaluation prompt is committed to `prompts/oracle_eval.md` before any oracle ratings are collected. The prompt does not reveal which cluster assignment was generated by which condition.
 
@@ -196,6 +209,7 @@ The following threats to the validity of the quality measures are acknowledged a
 | **Fixed K assumption** | Silhouette, Davies-Bouldin | Silhouette is sensitive to K. Fixing K = 8 across conditions ensures comparability but means a conversational condition that would benefit from a different K cannot express that benefit. | Limitation disclosed; K sensitivity analysis deferred to future work. |
 | **Rater domain knowledge** | Human pairwise rating | Team members and course peers lack expert knowledge of the Russia-Ukraine conflict. Ratings reflect a domain-naive analyst's intuitions, not expert geopolitical judgment. | This is the relevant user population for the prototype; explicitly described in the paper. |
 | **Oracle self-preference bias** | Cohen's κ, Spearman's ρ | The oracle model may prefer Condition C outputs (its own) when rating pairs. | Blind prompt (condition labels omitted); disclosed as residual risk. |
+| **Displayed-label / position bias** | Spearman's ρ, Cohen's κ | The oracle may preserve the displayed label A or B after swapping, rather than preserving the same underlying clustering. | Original/swapped-order diagnostic added; same-label-after-swap behaviour is treated as evidence against H3. |
 | **Majority-vote aggregation** | Spearman's ρ, Cohen's κ | Majority vote discards rater disagreement information and can mask bimodal preferences. | Krippendorff's α reported first; tied pairs excluded from ρ calculation. |
 | **Small validation set (N = 20)** | Spearman's ρ, Cohen's κ | CI width of ±0.15 on ρ means marginal results (ρ ≈ 0.7) cannot be clearly distinguished from threshold. | Decision rule requires both ρ > 0.7 and CI lower bound > 0.5; marginal results reported as inconclusive. |
 | **Feature encoding validity** | All cluster-quality metrics | One-hot encoding of actor names introduces a high-dimensional, sparse space that may not represent semantic actor similarity. A unit that changes actor coding (e.g., splitting actor categories) would improve encoding validity but change the feature space mid-experiment. | Encoding fixed before any runs; limitation disclosed. |
@@ -212,6 +226,7 @@ The following threats to the validity of the quality measures are acknowledged a
 | Human pairwise preference | Interpretability | Secondary | Forced-choice, majority vote | — (proportion with binomial CI) | Descriptive; no standalone confirmatory threshold |
 | Spearman's ρ (oracle vs. human) | Proxy validity | **Confirmatory (H3)** | Rank correlation on 20 pairs | Bootstrap over 20 pairs | ρ > 0.7 AND CI lower bound > 0.5 |
 | Cohen's κ (oracle vs. human) | Proxy validity | Secondary (H3 check) | Standard two-rater κ | Bootstrap over 20 pairs | κ ≥ 0.40 required for H3 to be considered met |
+| Position-bias diagnostic | Proxy validity safeguard | Prerequisite for H3 interpretation | Original/swapped oracle comparison on the same 20 pairs | Pair-level counts | Same displayed label after swap without the same underlying choice counts against H3 |
 | Krippendorff's α (inter-rater) | Measurement reliability | Prerequisite | `krippendorff` package | Bootstrap | α ≥ 0.40 required before H3 proceeds |
 | Silhouette per turn (trajectory) | Convergence | Exploratory | Per-turn `silhouette_score` | — | Descriptive only |
 

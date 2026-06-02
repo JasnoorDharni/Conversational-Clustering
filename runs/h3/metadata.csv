@@ -1,0 +1,21 @@
+pair_id,group,seed,left_run_id,left_condition,left_feature_set,right_run_id,right_condition,right_feature_set,option_A_side,option_A_run_id,option_A_condition,option_A_feature_set,option_B_side,option_B_run_id,option_B_condition,option_B_feature_set,majority,agreement_share
+pair_01,A vs B / F2 — human refinement perceptible?,20,A_F2_seed020,A,F2,B_F2_seed020,B,F2,right,B_F2_seed020,B,F2,left,A_F2_seed020,A,F2,B,0.8
+pair_02,A vs B / F2 — human refinement perceptible?,3,A_F2_seed003,A,F2,B_F2_seed003,B,F2,right,B_F2_seed003,B,F2,left,A_F2_seed003,A,F2,B,1.0
+pair_03,A vs B / F2 — human refinement perceptible?,0,A_F2_seed000,A,F2,B_F2_seed000,B,F2,right,B_F2_seed000,B,F2,left,A_F2_seed000,A,F2,B,0.8
+pair_04,A vs B / F2 — human refinement perceptible?,23,A_F2_seed023,A,F2,B_F2_seed023,B,F2,right,B_F2_seed023,B,F2,left,A_F2_seed023,A,F2,A,0.8
+pair_05,A vs B / F2 — human refinement perceptible?,8,A_F2_seed008,A,F2,B_F2_seed008,B,F2,left,A_F2_seed008,A,F2,right,B_F2_seed008,B,F2,A,0.6
+pair_06,A vs C / F2 — oracle refinement perceptible?,10,A_F2_seed010,A,F2,C_F2_seed010,C,F2,right,C_F2_seed010,C,F2,left,A_F2_seed010,A,F2,B,0.8
+pair_07,A vs C / F2 — oracle refinement perceptible?,6,A_F2_seed006,A,F2,C_F2_seed006,C,F2,right,C_F2_seed006,C,F2,left,A_F2_seed006,A,F2,B,1.0
+pair_08,A vs C / F2 — oracle refinement perceptible?,28,A_F2_seed028,A,F2,C_F2_seed028,C,F2,left,A_F2_seed028,A,F2,right,C_F2_seed028,C,F2,B,0.8
+pair_09,A vs C / F2 — oracle refinement perceptible?,5,A_F2_seed005,A,F2,C_F2_seed005,C,F2,left,A_F2_seed005,A,F2,right,C_F2_seed005,C,F2,A,0.6
+pair_10,A vs C / F2 — oracle refinement perceptible?,26,A_F2_seed026,A,F2,C_F2_seed026,C,F2,left,A_F2_seed026,A,F2,right,C_F2_seed026,C,F2,A,0.6
+pair_11,B vs C / F2 — human vs oracle differ?,25,B_F2_seed025,B,F2,C_F2_seed025,C,F2,right,C_F2_seed025,C,F2,left,B_F2_seed025,B,F2,B,0.8
+pair_12,B vs C / F2 — human vs oracle differ?,4,B_F2_seed004,B,F2,C_F2_seed004,C,F2,right,C_F2_seed004,C,F2,left,B_F2_seed004,B,F2,B,0.8
+pair_13,B vs C / F2 — human vs oracle differ?,19,B_F2_seed019,B,F2,C_F2_seed019,C,F2,left,B_F2_seed019,B,F2,right,C_F2_seed019,C,F2,A,0.6
+pair_14,B vs C / F2 — human vs oracle differ?,2,B_F2_seed002,B,F2,C_F2_seed002,C,F2,right,C_F2_seed002,C,F2,left,B_F2_seed002,B,F2,B,0.8
+pair_15,B vs C / F2 — human vs oracle differ?,1,B_F2_seed001,B,F2,C_F2_seed001,C,F2,left,B_F2_seed001,B,F2,right,C_F2_seed001,C,F2,A,0.6
+pair_16,A/F1 vs A/F2 — feature richness perceptible?,9,A_F1_seed009,A,F1,A_F2_seed009,A,F2,right,A_F2_seed009,A,F2,left,A_F1_seed009,A,F1,B,0.8
+pair_17,A/F1 vs A/F2 — feature richness perceptible?,12,A_F1_seed012,A,F1,A_F2_seed012,A,F2,right,A_F2_seed012,A,F2,left,A_F1_seed012,A,F1,B,0.8
+pair_18,A/F1 vs A/F2 — feature richness perceptible?,27,A_F1_seed027,A,F1,A_F2_seed027,A,F2,left,A_F1_seed027,A,F1,right,A_F2_seed027,A,F2,A,0.8
+pair_19,A/F1 vs A/F2 — feature richness perceptible?,17,A_F1_seed017,A,F1,A_F2_seed017,A,F2,right,A_F2_seed017,A,F2,left,A_F1_seed017,A,F1,B,1.0
+pair_20,A/F1 vs A/F2 — feature richness perceptible?,18,A_F1_seed018,A,F1,A_F2_seed018,A,F2,left,A_F1_seed018,A,F1,right,A_F2_seed018,A,F2,A,0.6

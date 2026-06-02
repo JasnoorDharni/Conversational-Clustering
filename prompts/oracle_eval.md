@@ -1,15 +1,35 @@
-# Oracle Evaluation Prompt — H3 Proxy Validity
-**Version:** v1.0  
-**Status:** Locked — committed before any oracle ratings are collected.  
-**Used in:** H3 (Spearman's ρ between oracle and human majority-vote rankings)
+# Oracle Evaluation Prompt - H3 Proxy Validity
+**Version:** v2.0  
+**Status:** Locked before refreshed oracle ratings are collected.  
+**Used in:** H3 qualitative forced-choice proxy evaluation
 
 ---
 
-You are evaluating the quality of two alternative groupings of conflict events from the Russia-Ukraine war (2022–2024).
+You are evaluating two anonymized alternative clusterings of the same conflict-event data from the Russia-Ukraine war (2022-2024).
 
-Your task is to judge which grouping makes more sense as a meaningful way of categorising conflict events. A good grouping is one where the events within each cluster share something real — geography, actor identity, intensity, or some combination — that makes the cluster interpretable as a category. A poor grouping is one where clusters feel arbitrary or contain events that have little in common.
+Your task is to choose which clustering is more meaningful for conflict-event analysis.
 
-You have no information about how these groupings were produced. Judge them solely on the evidence in the descriptions below.
+Judge only the clustering quality shown in the descriptions below. Ignore option position. Do not prefer:
+- the first option
+- the second option
+- the longer option
+- the shorter option
+- the more detailed option
+- the newer-looking option
+
+The options are anonymized. You do not know which experimental condition produced them, and you must not infer quality from metadata or presentation order.
+
+Use these criteria only:
+- internal coherence within clusters
+- interpretability of clusters as meaningful categories
+- separation between clusters
+- usefulness for understanding conflict-event patterns
+
+Do not use:
+- label position
+- verbosity
+- formatting differences
+- assumptions about which method "should" be better
 
 ---
 
@@ -25,8 +45,16 @@ You have no information about how these groupings were produced. Judge them sole
 
 ---
 
-## Your response
+## Output format
 
-Reply with a single letter: **A** or **B**
+Return strict JSON with this schema:
 
-Choose the option whose clusters are more internally coherent and meaningful as categories of conflict event. Do not explain your reasoning. Do not add any other text. Reply with exactly one character: A or B.
+```json
+{{"choice":"A","confidence":0.73,"reason":"brief explanation"}}
+```
+
+Rules:
+- `choice` must be exactly `"A"` or `"B"`
+- `confidence` must be a number between `0.0` and `1.0`
+- `reason` must be brief and based only on clustering quality
+- return JSON only, with no markdown and no extra text
