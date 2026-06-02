@@ -1,0 +1,163 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+
+\title{Conversational Clustering on UCDP GEDEvent 25.1}
+\author{Capstone Project Team}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report studies whether conversational refinement improves clustering quality on a structured conflict-event dataset and whether an LLM oracle can stand in for human judgment when comparing cluster assignments. The project uses the UCDP Georeferenced Event Dataset (GED) 25.1, filtered to the Russia-Ukraine conflict and sampled to 2{,}000 events. The study compares a one-shot k-means baseline, a human conversational refinement condition, and an oracle-driven conversational condition. The report also evaluates a held-out H3 oracle-validity check based on 20 pairwise cluster comparisons rated by five human raters. H3 was executed, but it failed as evidence for oracle validity because the oracle showed strong displayed-label bias and the human inter-rater reliability was low.
+\end{abstract}
+
+\section{Introduction}
+
+This project asks whether conversational interaction can improve clustering quality when a dataset has no ground-truth partition. The motivating case is the UCDP GED 25.1 conflict-event dataset, where events contain geographic, actor, and fatality information but no canonical cluster labels.
+
+The project studies two linked questions. First, can iterative natural-language refinement improve clustering relative to a one-shot baseline? Second, can an LLM oracle act as a cheap evaluator of cluster quality by agreeing with human judgments on pairwise comparisons?
+
+\section{Related Work}
+
+The related-work review is maintained in \texttt{docs/related\_work.md}. The main threads are:
+
+\begin{itemize}[leftmargin=*]
+\item interactive and human-in-the-loop clustering
+\item LLM-assisted interpretation of user intent
+\item cluster-quality evaluation without ground truth
+\item LLM-as-judge validation
+\item conflict-event data and UCDP dataset methodology
+\end{itemize}
+
+The final prose for this section should be expanded directly from the current versioned review rather than rewritten from scratch at the end of the project.
+
+\section{Study Design and Question Evolution}
+
+The versioned research trajectory is documented in \texttt{docs/study\_plan.md}. The operational design and amendment trail are documented in \texttt{docs/study\_design.md}. The quality and measurement rules are documented in \texttt{docs/quality\_spec.md}.
+
+\subsection{Research Questions}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{RQ1:} Does conversational refinement improve clustering quality relative to a one-shot baseline?
+\item \textbf{RQ2:} Can an LLM oracle serve as a valid proxy for human cluster-quality judgment?
+\end{itemize}
+
+\subsection{How the Question Evolved}
+
+The project began with a broad claim about conversational clustering quality and later added a methodological validation question about the oracle evaluator. After the first H3 oracle pass produced a suspicious label pattern, the design was amended to include original/swapped A/B diagnostics. That amendment changed H3 from a simple agreement check into a bias-aware validity test.
+
+\section{Method}
+
+\subsection{Dataset}
+
+The project uses UCDP GED 25.1 filtered to Ukraine events from 2022-02-24 onward. A fixed random sample of 2{,}000 events was drawn and committed as \texttt{data/sample\_seed42.csv}. Provenance and exploration details are in \texttt{docs/data\_provenance.md}.
+
+\subsection{Conditions}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Condition A:} one-shot k-means baseline
+\item \textbf{Condition B:} human conversational refinement
+\item \textbf{Condition C:} oracle conversational refinement
+\end{itemize}
+
+\subsection{Feature Sets}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{F1:} location-heavy representation
+\item \textbf{F2:} F1 plus \texttt{type\_of\_violence}, \texttt{side\_b}, and raw min-max normalized \texttt{best} fatalities
+\end{itemize}
+
+\subsection{Primary Outcome}
+
+The primary quantitative outcome is final Silhouette score. Secondary outcomes include Davies-Bouldin index and conversational trajectory summaries.
+
+\subsection{H3 Oracle-Validity Procedure}
+
+H3 uses 20 cluster-pair comparisons with five human raters. Each pair is also rated by the oracle twice:
+
+\begin{itemize}[leftmargin=*]
+\item once in the original displayed A/B order
+\item once with the displayed A/B order swapped
+\end{itemize}
+
+This diagnostic separates apparent agreement on the displayed label from stable agreement on the same underlying clustering.
+
+\section{Results}
+
+\subsection{Main Experiment}
+
+\textbf{TODO:} insert the final H1 and H2 results regenerated from the committed analysis scripts and logs, with confidence intervals reported inline.
+
+\subsection{H3: Oracle Validity}
+
+H3 was executed, but it did not support the oracle-validity claim.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+Metric & Value \\
+\midrule
+Human inter-rater reliability (Krippendorff's $\alpha$) & 0.13 \\
+Original-order oracle-human agreement & 13 / 20 = 0.65 \\
+Original-order Cohen's $\kappa$ & 0.22 \\
+Original-order Spearman's $\rho$ & 0.24 \\
+Pairs keeping same displayed label after swap & 19 / 20 \\
+Pairs keeping same underlying clustering after swap & 1 / 20 \\
+H3 status & not supported \\
+\bottomrule
+\end{tabular}
+\caption{H3 oracle-validity summary from committed H3 outputs.}
+\end{table}
+
+The original-order agreement looked superficially moderate, but the swap diagnostic showed that the oracle almost always preserved the same displayed label rather than the same underlying clustering. This is strong evidence of displayed-label bias. At the same time, the human reference signal was weak because inter-rater reliability was low. Taken together, these two issues mean H3 failed as evidence for oracle validity in this setting.
+
+\subsection{Interpretation of H3}
+
+The correct interpretation is not that H3 was merely missing or unfinished. H3 was completed, and the result is substantively negative: the oracle did not provide defensible validity evidence for use as a human proxy on this task.
+
+\section{Discussion}
+
+The project should separate two questions in the discussion:
+
+\begin{itemize}[leftmargin=*]
+\item whether conversational refinement itself improves clustering quality
+\item whether the oracle can be trusted as a judge of that quality
+\end{itemize}
+
+H3 affects the second claim directly. Even if the main clustering pipeline yields interesting improvements, this report should avoid treating oracle agreement as validated evidence unless supported by human agreement and bias diagnostics.
+
+\section{Limitations}
+
+\begin{itemize}[leftmargin=*]
+\item No ground-truth cluster labels exist for the conflict-event dataset.
+\item The event sample is feasible rather than exhaustive.
+\item The dataset inherits reporting and spatial-precision biases from UCDP collection.
+\item H3 used a small pair set and a weak human reference signal.
+\item The oracle displayed strong displayed-label bias under swap testing.
+\end{itemize}
+
+\section{Ethics}
+
+The project uses a public academic conflict-event dataset and a low-risk human-rating procedure with anonymized responses and a content warning. The full ethics note is maintained in \texttt{docs/ethics\_note.md}. No personal dataset identifiers are used, and no individual rater identities are reported.
+
+\section{Team Contributions}
+
+\textbf{TODO:} add the final team-contribution paragraph matching the course submission format.
+
+\section{References}
+
+\textbf{TODO:} convert the versioned bibliography in \texttt{docs/related\_work.md} into the final bibliography format required for submission.
+
+\end{document}

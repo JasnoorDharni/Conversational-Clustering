@@ -1,299 +1,140 @@
-# Study Plan — Conversational Clustering on the UCDP GEDEvent 25.1 Dataset
+# Study Plan - Conversational Clustering on the UCDP GEDEvent 25.1 Dataset
 
-**Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1 — filtered to Russia-Ukraine conflict\
-**Version:** v0.7
+**Dataset:** UCDP Georeferenced Event Dataset (GED) v25.1, filtered to the Russia-Ukraine conflict  
+**Version:** v0.8
 
 ---
 
 ## Changelog
 
 | Version | Date | Summary of changes |
-| --- | --- | --- |
-| v0.1 | 2026-05-13 | Initial draft. Research questions, hypotheses, and scope committed at Sprint 1 start. Methodology and evaluation strategy preliminary. |
-| v0.2 | 2026-05-20 | Updated after Sprint 1 completion. EDA findings incorporated: (1) `type_of_violence` and `side_a` dropped from F2 feature set due to near-zero variance (cardinality 2 and 1 respectively); (2) `where_description` embedding decision closed — excluded from feature sets, value over structured geographic features is marginal; (3) `adm_2` added to F2 cautiously given 19.8% null rate — decision documented; (4) geographic concentration finding noted (Donetsk 49.1%) with implication for F1 baseline interpretation; (5) two open questions from v0.1 resolved. Sprint 2 roadmap added. |
-| v0.3 | 2026-05-22 | Updated after Sprint 2 execution. (1) Open questions §7 updated: model string, prompt files, and K=8 marked as resolved; experimenter assignment order and rater recruitment still pending. (2) Execution status documented: Conditions A and C fully executed (120 runs, seeds 0–29, all complete). Condition B pending. (3) Preliminary result for H1 (Condition C) added. (4) Model version inconsistency between Condition A and C runs noted and flagged — protocol amendment registered in `docs/study_design.md §12`. (5) Sprint 2 roadmap updated with current completion status. |
-| v0.4 | 2026-05-28 | Updated during Condition B execution. (1) §9 execution status updated: B/F2 at 19/30, B/F1 at 3/30, all other conditions complete. (2) Remaining B seeds and per-person assignment documented. (3) New §10 added: results dashboard — a lightweight visualization tool planned to accompany the final analysis. (4) Dataset limitation noted: near-constant `side_a`/`side_b`/`type_of_violence` in the Russia-Ukraine subset reduces F2 effective dimensionality to geography + fatalities only. |
-| v0.5 | 2026-05-29 | New §11 added: additional exploratory analyses planned post-hoc based on data available in `run_log.jsonl`. Four analyses documented: instruction taxonomy (B vs C), feature weight trajectory, instruction-weight alignment check, per-turn silhouette delta. All labeled exploratory; pre-registered H1/H2/H3 unchanged. Amendment A-002 registered in `docs/study_design.md §12`. |
+|---|---|---|
+| v0.1 | 2026-05-13 | Initial draft. Research questions, hypotheses, scope, and preliminary measurement plan committed at Sprint 1 start. |
+| v0.2 | 2026-05-20 | EDA-informed update. Feature-set assumptions revised after the first data audit. |
+| v0.3 | 2026-05-22 | Study-plan update after early execution work. Model pin, prompt files, and operational K value clarified. |
+| v0.4 | 2026-05-28 | Execution status and remaining run planning updated during Condition B work. |
+| v0.5 | 2026-05-29 | Post-hoc exploratory analyses documented and explicitly marked exploratory. |
+| v0.6 | 2026-06-02 | Feature-set description aligned with the executed implementation. |
+| v0.7 | 2026-06-02 | H3 execution recorded. The oracle-human evaluation was completed and interpreted as not supported because of strong displayed-label bias and low human inter-rater reliability. |
+| v0.8 | 2026-06-02 | Study-plan cleanup. Result-heavy interpretation and report-style prose removed so this document remains a versioned record of questions, hypotheses, scope, and open issues. |
 
-| v0.6 | 2026-06-02 | Documentation aligned with the executed F2 implementation: F2 includes `type_of_violence`, `side_b`, and raw `best` fatalities min-max normalised; `side_a`, `adm_2`, and `where_description` are excluded.|
-| v0.7 | 2026-06-02 | H3 execution and interpretation recorded. Five human raters completed the 20-pair task, the oracle was rerun with original and swapped displayed A/B order, and H3 is now interpreted as **not supported** because the oracle showed strong displayed-label bias (19/20 pairs kept the same displayed label after swapping) and low human inter-rater reliability (Krippendorff's α = 0.13). |
 ---
 
 ## 1. Context and Motivation
 
-The UCDP GEDEvent 25.1 dataset provides structured, georeferenced records of organized violent events in the Russia-Ukraine conflict. Each record encodes event type, actor identities, location (coordinates + administrative divisions), date, and estimated casualties. The dataset has no canonical cluster labels — there is no ground-truth partition of events into meaningful groups. This makes it a suitable testbed for studying whether a conversational clustering system can help a user discover and refine meaningful groupings without manual hyperparameter tuning.
+The UCDP GEDEvent 25.1 dataset provides structured, georeferenced records of organized violence in the Russia-Ukraine conflict. The project asks whether a conversational clustering workflow can improve on a simple automated baseline when there is no ground-truth clustering label set.
 
-This project sits at the intersection of two questions: (1) does conversational refinement produce better clusters than automated baseline methods on structured conflict event data, and (2) can we evaluate cluster quality cheaply — without expensive human annotation — by using an LLM oracle as a proxy rater?
+The study also asks a methodological question: whether an LLM oracle can stand in for humans when judging cluster quality. That question matters because the main experiment is cheap to scale computationally, while human judgment is not.
 
 ---
 
 ## 2. Research Questions
 
-### Primary — RQ1: Conversational refinement vs. one-shot clustering
+### Primary - RQ1
 
-> **Does iterative conversational refinement produce measurably better clusters (by internal validity indices) than a single automated clustering run on the GEDEvent data, and does the magnitude of improvement depend on the feature set used to represent events?**
+> Does iterative conversational refinement produce better clusters than a one-shot baseline on the UCDP GED sample, and does that depend on the feature representation?
 
-The intuition is that automated clustering on a mixed structured dataset (numeric + categorical + geographic features) is sensitive to feature weighting and distance metric choices that a user cannot easily specify upfront. Conversational refinement provides a channel through which domain knowledge — "separate events by casualty level, not just location" — can be injected incrementally.
+### Secondary - RQ2
 
-### Secondary — RQ2: LLM oracle as proxy for human judgment
-
-> **Do cluster quality rankings produced by an LLM oracle correlate with human rater preferences at ρ &gt; 0.7 (Spearman's rank correlation), making oracle-driven evaluation a viable low-cost substitute for human rating in this setting?**
-
-This is a meta-claim about our evaluation methodology. If the oracle is a valid proxy, it justifies using it to evaluate the many experimental runs that human rating cannot cover at scale. A low correlation is an equally important finding — it would mean oracle-driven evaluation of structured conflict data is unreliable and should not be used without human validation.
+> Can an LLM oracle serve as a valid proxy for human judgment when rating pairwise cluster-quality comparisons in this setting?
 
 ---
 
 ## 3. Hypotheses
 
 | ID | Type | Statement |
-| --- | --- | --- |
-| H1 | Confirmatory | Conversational refinement improves the Silhouette score of the final cluster assignment relative to the automated baseline (one-shot k-means on F2 features), with the improvement quantified as a 95% bootstrap CI excluding zero and a one-sided Wilcoxon signed-rank test p &lt; 0.05 over 30 replications. |
-| H2 | Exploratory | The improvement from conversational refinement is larger under the full feature set (F2) than under location-only features (F1), suggesting refinement adds most value when the feature space is higher-dimensional. Reported without multiple-comparison correction; labelled exploratory. |
-| H3 | Confirmatory | Spearman's ρ between LLM oracle cluster rankings and human rater rankings exceeds 0.7, with bootstrap CI lower bound &gt; 0.5, on a held-out sample of 20 cluster pairs. Cohen's κ ≥ 0.40 is additionally required for H3 to be considered met. |
+|---|---|---|
+| H1 | Confirmatory | Conversational refinement improves final Silhouette score relative to the one-shot baseline under the full feature set. |
+| H2 | Exploratory | Conversational refinement helps more under the richer feature set than under the location-only feature set. |
+| H3 | Confirmatory | Oracle judgments correlate strongly enough with human judgments to support oracle-based evaluation in this setting. |
 
-H1 is the primary confirmatory test. H2 is exploratory and will be reported as such. H3 is confirmatory but depends on recruiting raters; its sample size will be revisited before human rating begins.
-
----
-
-## 4. Study Design
-
-Full operationalisation is in `docs/study_design.md` (v0.1, pre-registered). Key elements summarised here for orientation.
-
-### 4.1 Conditions
-
-| Condition | Description | Role |
-| --- | --- | --- |
-| A — Baseline | One-shot k-means on F1 or F2; no iterative refinement. K = 8 fixed. | Primary control |
-| B — Conversational (human) | Team member issues up to 5 NL refinement instructions per session; blind to Silhouette score during the session. | Treatment |
-| C — Conversational (LLM oracle) | LLM acts as both user and interpreter to simulate many sessions cheaply. | Proxy-validity arm |
-
-30 replications per (condition × feature set) cell, seeds 0–29. Analysis is paired by seed.
-
-### 4.2 Feature Sets
-
-| Level | Features included | EDA / implementation notes |
-| --- | --- | --- |
-| F1 — Location-only | `latitude`, `longitude` continuous features, min-max normalised + `adm_1` one-hot encoded. Missing `adm_1` values are encoded as `unknown`. | Clean geographic feature set. Severe geographic concentration, especially Donetsk oblast, should be disclosed as an F1 limitation. |
-| F2 — Full | F1 + `type_of_violence` one-hot + `side_b` actor identity one-hot, top-N by frequency + `best` fatality estimate, min-max normalised. | This is the executed implementation in `src/features.py`. `side_a`, `adm_2`, and `where_description` are excluded. The executed code used raw `best`, not `log(best + 1)`. |
-
-**Decision / implementation log:**
-
-- `type_of_violence` was retained in the executed F2 implementation, although EDA showed near-zero variance.
-- `side_b` was retained as the actor feature, one-hot encoded with top-N actor handling.
-- `side_a` was excluded because it is constant in the filtered subset.
-- `adm_2` was excluded because of nulls and high cardinality.
-- `where_description` was excluded because the expected value of text embeddings was considered too small for the added complexity.
-- `best` fatalities were used as raw values with min-max normalisation.
-
-### 4.3 Outcome Measures
-
-Full specification in `docs/quality_spec.md` (v0.1, pre-registered).
-
-- **Primary:** Silhouette score (final assignment, sklearn euclidean).
-- **Secondary:** Davies-Bouldin index; turns to stable assignment (Δ &lt; 0.01).
-- **For RQ2:** Spearman's ρ + Cohen's κ (oracle vs. human majority vote); Krippendorff's α (inter-rater reliability, must be ≥ 0.40 before H3 proceeds).
-- **Additional exploratory analyses (added v0.5):** see §11.
-
-### 4.4 Sample
-
-- N = 2,000 events, random sample from 27,942-event Russia-Ukraine subset (country_id = 369, date_start ≥ 2022-02-24).
-- Seed: 42. File: `data/sample_seed42.csv`. MD5: `a92a9a2dc2bec3a0dfa3accb6759daf0`.
-- Sample fraction: 14.3% of the filtered subset. Feasibility-driven choice.
+H1 is the primary confirmatory claim. H2 is exploratory. H3 is confirmatory but depends on the human reference signal being reliable enough to support interpretation.
 
 ---
 
-## 5. Minimum Viable Build (scope boundary)
+## 4. Study Design Summary
 
-The build exists solely to run the study. Required capabilities:
+Full operational detail is in `docs/study_design.md`. The core structure is:
 
-- Config-driven: accepts `condition`, `feature_set`, `K`, `seed` as parameters.
-- Runs clustering pipeline end-to-end; writes `{run_id, condition, feature_set, seed, K, silhouette_final, db_final, timestamp}` to `runs/run_log.jsonl`.
-- For Conditions B/C: CLI conversational loop; logs each turn as `{run_id, turn, instruction, parsed_params, silhouette_turn_N, db_turn_N, timestamp}`; does **not** display Silhouette score to human experimenter in Condition B.
-- Runnable from fresh clone with `pip install -r requirements.txt` + one command.
-
-No UI beyond CLI output. No caching, auth, or extensibility abstractions.
-
-**Stack (finalised):** Python, scikit-learn (clustering + metrics), pandas (data), \[LLM API TBD — see open questions\], jsonlines (logging).
+- Condition A: one-shot k-means baseline.
+- Condition B: conversational refinement with a human experimenter.
+- Condition C: conversational refinement with an LLM oracle acting as user.
+- Feature set F1: location-heavy baseline representation.
+- Feature set F2: F1 plus `type_of_violence`, `side_b`, and raw min-max normalized `best` fatalities.
+- Analysis paired by seed over 30 replications per condition-feature cell.
 
 ---
 
-## 6. Team Roles and Contribution Boundaries
+## 5. Primary Outcome and Measurement
 
-| Person | Sprint ownership | Primary gradable artifacts |
-| --- | --- | --- |
-| Person 1 | Study design · evaluation instrument · statistical analysis · related work | `docs/study_plan.md`, `docs/related_work.md`, `docs/study_design.md`, `docs/quality_spec.md`, analysis notebooks, final report §results |
-| Person 2 | MVB · prompt engineering · logging infrastructure | `src/` (pipeline code), `prompts/` (versioned prompt files), `README.md`, `requirements.txt`, `config/model.yaml` |
-| Person 3 | Data pipeline · EDA · experiment runner · data ethics | `data/eda_ucdp_ukraine.ipynb`, `data/sample_seed42.csv`, `docs/data_provenance.md`, run execution logs, `docs/study_plan.md §data` |
+Full measurement definitions are in `docs/quality_spec.md`. The core plan is:
+
+- Primary outcome for H1: final Silhouette score.
+- Secondary quantitative checks: Davies-Bouldin index and turn-level trajectory summaries.
+- H3 evaluation: oracle-versus-human pairwise forced-choice agreement, reported together with human inter-rater reliability and swap-based bias diagnostics.
+
+---
+
+## 6. Scope Boundary
+
+The repository build exists to run the study reproducibly. The project scope is:
+
+- Config-driven experimental conditions.
+- Logged runs reproducible from committed scripts and inputs.
+- Versioned prompts, configs, and rating materials.
+- Analysis generated from committed logs.
+
+The project does not currently promise any separate product layer beyond what is needed to run and report the study.
 
 ---
 
 ## 7. Open Questions
 
-### Resolved (v0.2)
+### Resolved
 
-- [x] **Dataset size and sampling.** 27,942 events post-filter; N = 2,000 sample drawn with seed 42, MD5 confirmed. No downsampling needed.
+- The experimental sample was locked as `data/sample_seed42.csv`.
+- The executed F2 implementation was clarified and documented.
+- The prompt files and model pin were committed.
+- H3 was executed on the available 20-pair set with five human raters.
 
-- [x] `where_description` **embedding.** Decided: excluded. Median 32 chars; marginal value over structured geographic features per EDA §5.7.
+### Still open or to be handled in reporting
 
-- [x] `type_of_violence`, `side_a`, and `side_b` in F2. Final executed implementation: `type_of_violence` retained, `side_b` retained, `side_a` excluded because it is constant.
-
-- [x] **Ethical classification.** UCDP GED is publicly available, covers no individual persons, published by Uppsala University under academic terms. No IRB required. Human rater consent procedure documented in `docs/study_design.md §10`.
-
-### Resolved (v0.3)
-
-- [x] **LLM model string.** Pinned as `claude-sonnet-4-5` in `config/model.yaml`. Note: Condition A runs were executed with an earlier model string (`claude-sonnet-4-20250514`) before the string was corrected. This discrepancy is inconsequential for Condition A (k-means does not call the LLM) but is registered as a protocol amendment in `docs/study_design.md §12`.
-
-- [x] **K = 8 confirmation.** K = 8 used in all 120 completed runs (Conditions A and C, both feature sets). Confirmed as the working fixed value. Formal elbow plot not committed separately — this is noted as a documentation gap.
-
-- [x] **Prompt files.** `prompts/interpreter.md` and `prompts/oracle_user.md` committed and operational. Both used in all Condition C runs without triggering placeholder errors.
-
-### Still open
-
-- [x] **Experimenter assignment order.** `config/experimenter_order.txt` exists but still contains `PENDING`. Must be filled before any Condition B session begins. **Blocking for Condition B.**
-
-- [x] **Human rater recruitment.** Five raters completed the 20-pair Google Form instrument. H3 is therefore executable, but the resulting reference signal is weak (Krippendorff's α = 0.13), which materially limits interpretation.
+- Final report synthesis across H1, H2, and H3.
+- Clear separation of confirmatory versus exploratory findings in the final write-up.
+- Explicit documentation of remaining design limitations that the experiment does not rule out.
 
 ---
 
-## 8. Sprint 2 Roadmap
+## 8. Study Evolution Note
 
-Sprint 1 delivered: EDA complete, study design and quality spec pre-registered, experimental sample committed. The repo build is the critical gap going into Sprint 2.
-
-| Person | Sprint 2 job | Status (v0.3, 2026-05-22) |
-| --- | --- | --- |
-| Person 1 | Draft human rating instrument (Google Form, 20 pairs structure) · Begin rater recruitment · Finalize K via elbow method and commit to `study_design.md §2.3` · Update `related_work.md` to v1 (positioning paragraphs) | ⚠ **Partial.** `experimenter_order.txt` and K operationally confirmed, but elbow plot not formally committed and rating form not yet linked. `related_work.md` still at v0. Rater recruitment not started. |
-| Person 2 | **Build the MVB**: feature encoding pipeline (`src/features.py`) · baseline clustering run (Condition A) · conversational loop CLI (`src/loop.py`) · logging to `runs/run_log.jsonl` · commit versioned prompt files (`prompts/interpreter.md`, `prompts/oracle_user.md`) · confirm and pin LLM model string in `config/model.yaml` | ✅ **Complete.** All modules built and operational. Prompts committed. Model string pinned. |
-| Person 3 | Run Condition A × F1 and F2 × seeds 0–29 once the build is stable · Sanity-check run logs · Begin Condition C oracle runs · Sprint notes committed | ✅ **Complete and exceeded.** 60 Condition A runs complete (seeds 0–29, F1+F2). 60 Condition C runs also complete (seeds 0–29, F1+F2). All 120 runs logged with status `complete`. |
-
-**The locking condition:** The study design is pre-registered and locks when the first entry is written to `runs/run_log.jsonl`. Any change to hypotheses, conditions, or outcome measures after that point requires a timestamped protocol amendment in `docs/study_design.md §12`. Do not begin Condition B runs until `config/experimenter_order.txt` is filled.
+This study plan is a living document rather than a frozen pre-registration. The detailed design, amendment trail, and measurement rules are carried by `docs/study_design.md` and `docs/quality_spec.md`. The purpose of this file is to keep the research trajectory and its version history legible.
 
 ---
 
-## 9. Execution Status and Preliminary Results (added v0.3)
+## 9. H3 Status
 
-### 9.1 Run completion
+H3 was executed, but it failed as evidence for oracle validity. The decisive reasons are:
 
-| Condition | Feature set | Seeds complete | Status |
-| --- | --- | --- | --- |
-| A | F1 | 30/30 | ✅ Complete |
-| A | F2 | 30/30 | ✅ Complete |
-| B | F1 | 3/30 | ⏳ In progress — seeds 6, 8, 11 done; 27 remaining |
-| B | F2 | 19/30 | ⏳ In progress — seeds 0–12, 17–22 done; seeds 13–16, 23–29 remaining |
-| C | F1 | 30/30 | ✅ Complete |
-| C | F2 | 30/30 | ✅ Complete |
+- strong displayed-label bias in the oracle judgments under the original/swapped A/B diagnostic
+- low human inter-rater reliability, which weakens the human reference signal itself
 
-Total records in `runs/run_log.jsonl`: **142**, all with `status: complete`.
-
-**Condition B remaining work by person** (from `config/experimenter_order.txt`):
-
-| Person | B/F2 remaining | B/F1 remaining |
-| --- | --- | --- |
-| Daniele | seeds 13, 14, 15, 16 | seeds 0–5, 13–16 |
-| Jasnoor | — | seeds 12, 17–22 |
-| Giacomo | seeds 23–29 | seeds 7, 9, 10, 23–29 |
-
-### 9.2 Preliminary results (Condition C vs A — pre-specified analysis)
-
-These figures are from `notebooks/analysis.ipynb` executed on the completed log. They are preliminary in the sense that Condition B data is not yet available.
-
-**Silhouette score — descriptive statistics (mean ± SD over 30 seeds):**
-
-| Condition | F1 | F2 |
-| --- | --- | --- |
-| A — Baseline | 0.905 ± 0.001 | 0.894 ± 0.001 |
-| C — Oracle | 0.874 ± 0.167 | 0.863 ± 0.053 |
-
-**H1 (Condition C/F2 vs A/F2):** Wilcoxon p = 0.9992; median improvement = −0.007; bootstrap 95% CI = \[−0.031, −0.001\]. **H1 not supported for Condition C.** The oracle refinement does not improve on the baseline — it slightly degrades Silhouette in the majority of seeds (22/30 negative). This is a substantive finding: automated oracle-driven refinement under these prompt and feature configurations does not outperform one-shot k-means. The confirmatory test for H1 remains the human-driven Condition B, which is still pending.
-
-**H2 (exploratory):** Cannot be computed until Condition B data is available.
-
-**H3:** Now computed on 20 held-out pairwise comparisons with 5 human raters. The result is **not supportive** of the oracle-as-proxy claim. Human inter-rater reliability is low (Krippendorff's α = 0.13), original-order oracle-human agreement is only 13/20 = 0.65 (κ = 0.22, ρ = 0.24), and the swap diagnostic is the decisive issue: the oracle preserved the same displayed label after swapping A/B in 19 of 20 pairs, while preserving the same underlying clustering in only 1 of 20 pairs. This pattern is far more consistent with displayed-label bias than with stable qualitative judgment, so H3 should be reported as failed rather than merely inconclusive.
-
-**Why the 13/20 agreement is misleading.** Human majority vote itself was skewed toward displayed `B` (12 of 20 pairs), and the oracle original-order choices were even more skewed toward displayed `B` (15 of 20 pairs). That creates superficial agreement without showing that the oracle is tracking the same underlying clusterings. The group-level original-order agreement rates are therefore not persuasive on their own: 0.60 for A vs B pairs, 0.80 for A vs C pairs, 0.60 for B vs C pairs, and 0.60 for A/F1 vs A/F2 pairs. Once the labels are swapped, that apparent agreement collapses for 19 of the 20 pairs.
-
-### 9.3 Dataset limitation identified during Condition B execution
-
-During Condition B sessions it became clear that the F2 feature space has limited effective variation beyond geography and fatalities. In the executed sample, `type_of_violence` and `side_b` have very low variance: almost all events are state-based and involve `Government of Ukraine` as `side_b`, while the minority one-sided violence cases correspond to civilians. Therefore, although F2 technically includes six feature-weight groups (`latitude`, `longitude`, `adm1`, `event_type`, `actor`, `fatalities`), the most informative dimensions are geographic position and fatality level. Actor-based and event-type instructions may therefore have limited effect.
+Detailed reporting belongs in `report/final_report.tex`, not in this study-plan file.
 
 ---
 
-## 10. Results Dashboard (added v0.4)
+## 10. Engineering Scope Note
 
-### 10.1 Purpose and scope
-
-To accompany the final analysis, the team plans to build a **lightweight results dashboard** to visualize the experimental outputs interactively. The dashboard is a communication and exploration tool — it does not affect the pre-registered analysis in `docs/study_design.md`, does not modify `runs/run_log.jsonl`, and is not part of the experimental protocol.
-
-### 10.2 Planned technology
-
-**Streamlit** — chosen for its minimal setup (pure Python, no frontend code), direct compatibility with pandas/matplotlib/plotly, and ability to run locally from a single script file.
-
-```bash
-pip install streamlit plotly
-streamlit run dashboard/app.py
-```
-
-### 10.3 Planned views
-
-| View | Description |
-| --- | --- |
-| **Overview** | Summary table: mean Silhouette and Davies-Bouldin per (condition × feature set), with run count and status. Mirrors the summary table in `notebooks/analysis.ipynb §8`. |
-| **H1 — Condition comparison** | Box plot of final Silhouette scores for A vs B vs C, split by feature set. Per-seed improvement bar chart (B − A and C − A). |
-| **Per-turn trajectory** | Line plot of median Silhouette by turn number for Conditions B and C (F2). Individual seed traces shown faintly in the background. |
-| **Geographic cluster map** | For a selected run (condition, feature set, seed), a scatter map of the 2,000 events coloured by cluster assignment. Uses Plotly `scatter_mapbox` with OpenStreetMap tiles. |
-| **Run explorer** | Filterable table of all records in `run_log.jsonl`. Allows drill-down into individual run metadata, turn-by-turn instructions, and parsed feature weights. |
-
-### 10.4 Data source
-
-All views read exclusively from `runs/run_log.jsonl` and `data/sample_seed42.csv`. No recomputation of clustering is performed at runtime — the dashboard is read-only.
-
-### 10.5 Deliverable
-
-A single file `dashboard/app.py`, runnable with `streamlit run dashboard/app.py` from the repo root. To be committed once Condition B runs are complete and the full log is available.
+The repository scope is limited to the study pipeline, versioned materials, and reproducible analysis/reporting artifacts.
 
 ---
 
-## 11. Additional Exploratory Analyses (added v0.5)
+## 11. Additional Exploratory Analyses
 
-These analyses are **post-hoc and exploratory**. They do not modify H1, H2, or H3, and are not part of the pre-registered confirmatory analysis in `docs/study_design.md`. They are documented here as required by the pre-registration amendment procedure (amendment A-002 in `docs/study_design.md §12`). All results derived from these analyses must be clearly labeled "exploratory" in the final report.
+These analyses remain explicitly exploratory and separate from H1-H3:
 
-Data source for all analyses: `runs/run_log.jsonl` (fields `turns[*].instruction`, `turns[*].parsed_params`, `turns[*].silhouette`). No additional data collection is required.
+- instruction taxonomy comparing human and oracle refinement behavior
+- feature-weight trajectories over conversational turns
+- instruction-to-weight alignment checks for the interpreter
+- per-turn Silhouette delta analysis
 
-### 11.1 Instruction taxonomy — B vs C comparison
-
-**Goal:** Characterise whether human experimenters (Condition B) and the LLM oracle (Condition C) systematically target different feature dimensions in their refinement instructions, and whether this difference explains the performance gap between the two conditions.
-
-**Method:** Each instruction in every B and C run is manually assigned to one of four categories: `geographic` (references position, oblast, location), `intensity` (references fatalities, casualties, deaths), `actor` (references who was involved), or `balance` (requests redistribution of weight across dimensions). Instructions that do not clearly fit any category are labeled `generic`. The distribution of categories is then compared between B and C across all turns and seeds.
-
-**Expected output:** A stacked bar chart (condition × instruction category × proportion) and a contingency table. Reported as a descriptive finding; no formal test.
-
-**Implementation:** Manual annotation of instructions extracted from `run_log.jsonl`; summary statistics in `notebooks/analysis.ipynb`.
-
-### 11.2 Feature weight trajectory per turn
-
-**Goal:** Visualise how the interpreter translates sequential instructions into feature weight paths over 5 turns, and compare the weight dynamics between Condition B and Condition C.
-
-**Method:** For each run in B and C (F2 feature set), extract the `parsed_params` dict at each turn. Plot weight trajectories for each of the six implemented F2 feature groups (`latitude`, `longitude`, `adm1`, `event_type`, `actor`, `fatalities`) over turns 1–5. Here, `event_type` corresponds to `type_of_violence`, `actor` corresponds to `side_b`, and `fatalities` corresponds to raw `best` fatalities after min-max normalisation. Compute and report: median weight per feature per turn across all seeds; and the per-seed range (min/max band). Compare B vs C median trajectories on the same axes.
-
-**Expected output:** A 6-panel line plot (one per feature group), B and C overlaid. Highlights whether humans and oracle systematically push different features.
-
-**Implementation:** Fully automated from `run_log.jsonl`; to be added to `notebooks/analysis.ipynb`.
-
-### 11.3 Instruction-weight alignment check
-
-**Goal:** Validate that the LLM interpreter (`prompts/interpreter.md`) correctly translates instructions into feature weight updates — i.e., that a geographic instruction actually increases geographic weights and not unrelated ones.
-
-**Method:** For a stratified sample of 15–20 instructions (drawn from Condition B runs, covering all four instruction categories), manually verify whether the direction of the dominant weight change in `parsed_params` matches the intent of the instruction. Code each case as `aligned`, `partially aligned`, or `misaligned`. Report alignment rate per category.
-
-**Expected output:** A small table (instruction category × alignment rate). Reported as a system validation finding.
-
-**Implementation:** Manual inspection of selected run_log records; no code required beyond extraction.
-
-### 11.4 Per-turn silhouette delta analysis
-
-**Goal:** Determine whether improvement in Silhouette is concentrated in early turns (1–2) or distributed across all 5 turns, and whether the pattern differs between Condition B and C.
-
-**Method:** For each run in B and C, compute `Δ_sil(t) = silhouette(t) − silhouette(t−1)` where `silhouette(0)` is the baseline (Condition A equivalent at the same seed). Aggregate median Δ_sil by turn number across all seeds, separately for B and C. Report the proportion of positive vs negative deltas at each turn.
-
-**Expected output:** A bar chart of median Δ_sil by turn (B and C side by side), with a horizontal zero line. Shows whether the first instruction or later ones tend to drive improvement.
-
-**Implementation:** Fully automated from `run_log.jsonl`; to be added to `notebooks/analysis.ipynb`.
+If reported, they should be labeled exploratory in the final report.
