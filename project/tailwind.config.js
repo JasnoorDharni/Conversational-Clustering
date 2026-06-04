@@ -31,7 +31,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       spacing: {
@@ -56,3 +56,4 @@ export default {
   },
   plugins: [],
 };
+
