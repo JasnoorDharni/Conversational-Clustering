@@ -125,6 +125,7 @@ Detailed reporting belongs in `report/final_report.tex`, not in this study-plan 
 ## 10. Engineering Scope Note
 
 The repository scope is limited to the study pipeline, versioned materials, and reproducible analysis/reporting artifacts.
+The project also includes a lightweight results dashboard UI in `project/`, deployed at <https://conversational-clust-g58t.bolt.host/>, for presenting EDA and H1-H3 outputs.
 
 ---
 

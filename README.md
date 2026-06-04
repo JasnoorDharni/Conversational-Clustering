@@ -4,6 +4,8 @@ This repository contains the code, prompts, committed sample data, logs, and stu
 
 This README is intentionally limited to setup, repository structure, and reproduction entry points. Study framing, methodology, ethics, and reporting live in `docs/` and `report/`.
 
+Results dashboard: https://conversational-clust-g58t.bolt.host/
+
 ## Setup
 
 Requirements:
@@ -40,6 +42,7 @@ Conversational-Clustering/
 |-- prompts/                 # Versioned prompt files
 |-- report/
 |   `-- final_report.tex     # Final report draft
+|-- project/                 # Results dashboard UI
 |-- runs/
 |   |-- run_log.jsonl        # Main experiment log
 |   |-- h3/                  # H3-only outputs
@@ -133,6 +136,7 @@ Current minimal H3 output footprint:
 - `docs/related_work.md`
 - `docs/data_provenance.md`
 - `docs/ethics_note.md`
+- `docs/dashboard_design.md`
 - `report/final_report.tex`
 
 ## Notes

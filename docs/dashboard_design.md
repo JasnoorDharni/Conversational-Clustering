@@ -5,6 +5,8 @@
 Turn the existing `project/` site into a static results dashboard for the study.
 It should present only committed project evidence, not act like a chat product or slide deck.
 
+Current deployed dashboard: https://conversational-clust-g58t.bolt.host/
+
 ## Content Rules
 
 - Use only data backed by committed files in `runs/`, `data/eda_outputs/`, `docs/`, and `report/`.
